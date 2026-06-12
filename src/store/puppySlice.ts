@@ -14,7 +14,7 @@ const puppySlice = createSlice({
   name: 'puppy',
   initialState,
   reducers: {
-    fetchPuppyRequest(state, _action: PayloadAction<string>) {
+    fetchPuppyRequest(state) {
       state.status = 'loading'
       state.error = null
     },

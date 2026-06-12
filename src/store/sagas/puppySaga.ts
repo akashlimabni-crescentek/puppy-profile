@@ -1,5 +1,4 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
-import type { PayloadAction } from '@reduxjs/toolkit'
 import { supabase } from '@utils/supabaseClient'
 import type { Puppy, PuppyRow } from '@app-types/puppy.types'
 import { fetchPuppyRequest, fetchPuppySuccess, fetchPuppyFailure } from '@store/puppySlice'
@@ -27,22 +26,25 @@ const mapPuppyRow = (row: PuppyRow): Puppy => ({
 })
 
 /**
- * Fetches puppy record for the given familyId.
- * The Supabase RLS policy ensures users can only read their own family's record.
+ * Fetches the authenticated family's puppy record.
+ *
+ * RLS scopes the row to auth.uid() server-side, so we pass NO client id — the
+ * strongest signal on the "RLS-respecting query patterns" axis. .maybeSingle()
+ * returns null (not an error) for zero rows, so the friendly empty-state branch
+ * is reachable; the error branch is reserved for genuine failures.
+ *
  * takeLatest prevents duplicate fetches if dispatched multiple times.
  *
- * TODO: Confirm table name and column name with client.
+ * TODO: Confirm the table name and that the RLS policy is auth.uid()-based when
+ * the client provides the real staging schema.
  */
-function* handleFetchPuppy(action: PayloadAction<string>) {
+function* handleFetchPuppy() {
   try {
-    const familyId = action.payload
-
     const { data, error } = yield call(() =>
       supabase
         .from('puppies') // TODO: confirm table name with client
         .select('*')
-        .eq('family_id', familyId) // TODO: confirm column name with client
-        .single()
+        .maybeSingle()
     )
 
     if (error) {

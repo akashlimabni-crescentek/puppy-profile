@@ -1,7 +1,9 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { lazy, Suspense } from 'react'
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
 import { ProtectedRoute } from './ProtectedRoute'
 import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
+import { useAppDispatch } from '@store/hooks'
+import { initializeAuth } from '@store/authSlice'
 
 /**
  * Lazy-loaded pages — code split so login and profile are separate chunks.
@@ -10,11 +12,18 @@ import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
 const LoginPage = lazy(() => import('@pages/LoginPage'))
 const ProfilePage = lazy(() => import('@pages/ProfilePage'))
 
+/** Shared full-screen fallback used while a lazy page chunk loads. */
+const pageFallback = (
+  <main className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center p-4">
+    <PuppyCardSkeleton />
+  </main>
+)
+
 const router = createBrowserRouter([
   {
     path: '/login',
     element: (
-      <Suspense fallback={null}>
+      <Suspense fallback={pageFallback}>
         <LoginPage />
       </Suspense>
     ),
@@ -23,33 +32,28 @@ const router = createBrowserRouter([
     path: '/',
     element: <ProtectedRoute />,
     children: [
+      { index: true, element: <Navigate to="/profile" replace /> },
       {
         path: 'profile',
         element: (
-          <Suspense
-            fallback={
-              <main
-                className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50
-                               flex items-center justify-center p-4"
-              >
-                <PuppyCardSkeleton />
-              </main>
-            }
-          >
+          <Suspense fallback={pageFallback}>
             <ProfilePage />
-          </Suspense>
-        ),
-      },
-      {
-        index: true,
-        element: (
-          <Suspense fallback={null}>
-            <LoginPage />
           </Suspense>
         ),
       },
     ],
   },
+  // Catch-all: unknown paths route back through the auth gate instead of blank.
+  { path: '*', element: <Navigate to="/" replace /> },
 ])
 
-export const AppRouter = () => <RouterProvider router={router} />
+export const AppRouter = () => {
+  const dispatch = useAppDispatch()
+
+  // Restore any persisted Supabase session into Redux exactly once on boot.
+  useEffect(() => {
+    dispatch(initializeAuth())
+  }, [dispatch])
+
+  return <RouterProvider router={router} />
+}

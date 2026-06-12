@@ -15,6 +15,7 @@ export const supabase = createClient(env.supabaseUrl, env.supabaseAnonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
-    detectSessionInUrl: true,
+    // Email/password only — no magic-link/OAuth redirect to parse from the URL.
+    detectSessionInUrl: false,
   },
 })

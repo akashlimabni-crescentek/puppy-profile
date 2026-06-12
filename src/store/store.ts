@@ -4,26 +4,33 @@ import authReducer from './authSlice'
 import puppyReducer from './puppySlice'
 import { rootSaga } from './sagas/rootSaga'
 
-const sagaMiddleware = createSagaMiddleware()
+/**
+ * Builds a fully-wired store instance (reducers + saga middleware running).
+ * The app uses the `store` singleton below; tests call makeStore() to get an
+ * isolated store with fresh state and its own saga runtime.
+ */
+export const makeStore = () => {
+  const sagaMiddleware = createSagaMiddleware()
 
-export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    puppy: puppyReducer,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      thunk: false, // Sagas handle all async — no thunks needed
-      serializableCheck: {
-        // Supabase Session contains Date objects — exclude from serializable check
-        ignoredActions: ['auth/loginSuccess', 'auth/setSession'],
-        ignoredPaths: ['auth.session'],
-      },
-    }).concat(sagaMiddleware),
-  devTools: import.meta.env.DEV,
-})
+  const store = configureStore({
+    reducer: {
+      auth: authReducer,
+      puppy: puppyReducer,
+    },
+    middleware: (getDefaultMiddleware) =>
+      // Redux holds only the minimal serializable AuthUser; the Supabase client
+      // owns the live Session. No serializableCheck ignore-list is needed.
+      getDefaultMiddleware({
+        thunk: false, // Sagas handle all async — no thunks needed
+      }).concat(sagaMiddleware),
+    devTools: import.meta.env.DEV,
+  })
 
-sagaMiddleware.run(rootSaga)
+  sagaMiddleware.run(rootSaga)
+  return store
+}
+
+export const store = makeStore()
 
 export type RootState = ReturnType<typeof store.getState>
 export type AppDispatch = typeof store.dispatch

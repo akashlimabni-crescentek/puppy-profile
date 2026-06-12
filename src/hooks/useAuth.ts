@@ -10,7 +10,9 @@ import type { LoginCredentials } from '@app-types/auth.types'
  */
 export const useAuth = () => {
   const dispatch = useAppDispatch()
-  const { user, isLoading, isAuthenticated, error } = useAppSelector((state) => state.auth)
+  const { user, isInitializing, isLoading, isAuthenticated, error } = useAppSelector(
+    (state) => state.auth
+  )
 
   const login = useCallback(
     (credentials: LoginCredentials) => {
@@ -27,5 +29,5 @@ export const useAuth = () => {
     dispatch(clearError())
   }, [dispatch])
 
-  return { user, isLoading, isAuthenticated, error, login, logout, dismissError }
+  return { user, isInitializing, isLoading, isAuthenticated, error, login, logout, dismissError }
 }

@@ -15,7 +15,7 @@ import { usePuppyProfile } from '@hooks/usePuppyProfile'
  */
 const ProfilePage = () => {
   const { user, logout } = useAuth()
-  const { puppy, isLoading, isError, error } = usePuppyProfile(user?.id)
+  const { puppy, isLoading, isError, error, retry } = usePuppyProfile()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -47,9 +47,12 @@ const ProfilePage = () => {
             <Typography variant="h4" color="primary" className="mb-2">
               Could not load profile
             </Typography>
-            <Typography variant="bodySmall" color="secondary">
+            <Typography variant="bodySmall" color="secondary" className="mb-4">
               {error?.message ?? 'An unexpected error occurred'}
             </Typography>
+            <Button variant="primary" size="sm" onClick={retry}>
+              Try again
+            </Button>
           </div>
         )}
 

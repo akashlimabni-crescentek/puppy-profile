@@ -17,13 +17,20 @@ export const formatAge = (ageMonths: number): string => {
 /** Formats weight in kg. e.g. 8.5 → "8.5 kg" */
 export const formatWeight = (weightKg: number): string => `${weightKg.toFixed(1)} kg`
 
-/** Formats ISO date to readable birthday. e.g. "2023-03-15" → "March 15, 2023" */
-export const formatBirthday = (isoDate: string): string =>
-  new Date(isoDate).toLocaleDateString('en-GB', {
+/**
+ * Formats an ISO date-only string to a readable birthday. e.g. "2023-03-15" → "March 15, 2023".
+ * Parses the date components in LOCAL time (not `new Date(isoDate)`, which treats
+ * "YYYY-MM-DD" as UTC and can render the previous day in negative-offset zones).
+ * Locale is 'en-US' to match the example output; revisit once the design spec lands.
+ */
+export const formatBirthday = (isoDate: string): string => {
+  const [year, month, day] = isoDate.slice(0, 10).split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   })
+}
 
 /** Capitalizes first letter. e.g. "golden retriever" → "Golden retriever" */
 export const capitalizeFirst = (str: string): string => {
