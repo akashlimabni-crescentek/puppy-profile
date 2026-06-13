@@ -61,9 +61,6 @@ export interface LoginFormValues {
  * See DECISIONS.md §3.
  */
 export const isFamilyTierAllowed = (user: User): boolean => {
-  const appRole = user.app_metadata?.role as string | null | undefined
-  if (appRole !== null && appRole !== undefined) return appRole === 'family'
-
   const tier = user.user_metadata?.tier as string | null | undefined
   if (tier !== null && tier !== undefined) return tier === 'family'
 

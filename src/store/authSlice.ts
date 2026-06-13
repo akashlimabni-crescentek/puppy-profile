@@ -43,7 +43,10 @@ const authSlice = createSlice({
       state.isLoading = false
       state.isAuthenticated = false
       state.user = null
-      state.error = null
+      // Intentionally preserve `error`: the family-tier denial calls signOut(),
+      // which fires SIGNED_OUT → logoutSuccess shortly after loginFailure sets the
+      // message. Clearing it here would wipe "Access denied" after ~2s. A genuine
+      // logout already has error === null, and the next loginRequest clears it.
     },
     /** Restores an existing session into Redux (boot restore + cross-tab sync). */
     setSession(state, action: PayloadAction<{ user: AuthUser }>) {
