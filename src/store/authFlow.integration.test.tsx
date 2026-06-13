@@ -66,10 +66,17 @@ describe('auth → fetch → render integration', () => {
     onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
   })
 
-  it('logs in a family user, fetches once, and renders the card', async () => {
+  it('logs in without an app_metadata role, fetches once, and renders the card', async () => {
+    // Mirrors the real staging user: no app_metadata.role, only a (untrusted)
+    // user_metadata.tier. Login must still succeed — RLS is the gate.
     signInWithPassword.mockResolvedValue({
       data: {
-        user: { id: 'u1', email: 'fam@test.com', app_metadata: { role: 'family' } },
+        user: {
+          id: 'u1',
+          email: 'fam@test.com',
+          app_metadata: { provider: 'email' },
+          user_metadata: { tier: 'family' },
+        },
         session: { access_token: 'token' },
       },
       error: null,
@@ -90,24 +97,37 @@ describe('auth → fetch → render integration', () => {
     )
 
     expect(await screen.findByText(mockPuppy.name)).toBeInTheDocument()
+    expect(await screen.findByText('Welcome, the Testerson family')).toBeInTheDocument()
     expect(signInWithPassword).toHaveBeenCalledTimes(1)
     expect(maybeSingle).toHaveBeenCalledTimes(1)
   })
 
-  it('denies a non-family user and never stores a session', async () => {
+  it('keeps an authenticated user with no visible family row on the no-record state', async () => {
+    // RLS, not a role flag, is the authorization gate: a user whose RLS query
+    // returns no family row is signed in but sees a friendly "no record" state.
     signInWithPassword.mockResolvedValue({
       data: {
-        user: { id: 'u2', email: 'other@test.com', app_metadata: { role: 'staff' } },
+        user: { id: 'u2', email: 'other@test.com', app_metadata: { provider: 'email' } },
         session: { access_token: 'token' },
       },
       error: null,
     })
+    maybeSingle.mockResolvedValue({ data: null, error: null })
 
     const store = makeStore()
     store.dispatch(loginRequest({ email: 'other@test.com', password: 'secret' }))
 
-    await waitFor(() => expect(store.getState().auth.error).not.toBeNull())
-    expect(store.getState().auth.isAuthenticated).toBe(false)
-    expect(signOut).toHaveBeenCalledTimes(1)
+    await waitFor(() => expect(store.getState().auth.isAuthenticated).toBe(true))
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <ProfilePage />
+        </MemoryRouter>
+      </Provider>
+    )
+
+    expect(await screen.findByText(/no family record found/i)).toBeInTheDocument()
+    expect(store.getState().auth.isAuthenticated).toBe(true)
   })
 })

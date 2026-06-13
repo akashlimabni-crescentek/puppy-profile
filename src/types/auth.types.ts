@@ -7,9 +7,12 @@ export interface AuthUser {
 }
 
 /**
- * Only family-tier users are allowed access (client requirement #1).
- * The RLS policy on the puppies table is the primary, DB-level enforcement.
- * The saga enforces the same rule at the application level as a second check.
+ * The app is family-only (client requirement #1). Authorization is enforced by
+ * Supabase RLS: a logged-in user can only read the family row scoped to their
+ * own auth.uid(), and only their family's puppies. 'family' is therefore the one
+ * nominal role every authenticated user carries — RLS, not this field, decides
+ * what data they can actually see. See DECISIONS.md §3 for why we do not gate on
+ * a metadata role (the staging user has none) and never trust user_metadata.
  */
 export type UserRole = 'family'
 
@@ -37,20 +40,13 @@ export interface LoginFormValues {
 }
 
 /**
- * Reads the authorization role from `app_metadata`, which is server-controlled
- * and NOT writable by the end user (unlike `user_metadata`). Trusting
- * `user_metadata` for authorization would let any user grant themselves access.
- *
- * TODO: Confirm with the client where the family role lives once the staging
- * schema arrives — it may instead be a row in a `profiles` table behind RLS.
- */
-export const getUserRole = (user: User): string | undefined =>
-  user.app_metadata?.role as string | undefined
-
-/**
  * Maps a Supabase User to our AuthUser shape.
- * Callers MUST verify the role is 'family' via getUserRole BEFORE calling this
- * (see authSaga); a missing or unknown role is treated as access-denied.
+ *
+ * No metadata role check happens here or at the call site: the staging user has
+ * no `app_metadata.role`, and `user_metadata` (which carries a `tier: 'family'`
+ * flag) is end-user-writable and must never be trusted for authorization. RLS is
+ * the authority — the RLS-scoped family/puppy read is what grants or denies
+ * access to data. See DECISIONS.md §3.
  */
 export const mapSupabaseUser = (user: User): AuthUser => ({
   id: user.id,

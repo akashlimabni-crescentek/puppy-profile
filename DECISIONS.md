@@ -34,13 +34,33 @@ nested tokens/expiry) into Redux forced a `serializableCheck` ignore-list and
 risked drift between two sources of truth. We keep `{ id, email, role }` in
 Redux and let the client own the live session. The ignore-list is gone.
 
-## 3. Authorization role comes from `app_metadata`, family-tier only
+## 3. Authorization is enforced by RLS, not a metadata role (resolved against staging)
 
-`user_metadata` is writable by the end user in common Supabase configurations,
-so trusting it for authorization would let a user grant themselves access. The
-role is read from `app_metadata` (server-controlled). A missing or unknown role
-is **access-denied** — we never default-grant. `UserRole` is the single literal
-`'family'` to match requirement #1.
+The handoff brief did not say where the family role lived. We inspected the
+staging test user's JWT directly before finalizing this, and found:
+
+- `app_metadata` is `{ provider: 'email', providers: ['email'] }` — **there is no
+  `app_metadata.role`.** The earlier code required `app_metadata.role === 'family'`,
+  which would have **hard-failed login for the legitimate family user.**
+- The only family signal is `user_metadata.tier === 'family'`, and `user_metadata`
+  is **end-user-writable** — trusting it for authorization would let a user grant
+  themselves access. So we do **not** use it.
+
+**Resolution (per the brief's §4.10):** RLS is the sole authorization gate. Login
+authenticates and stores the session without a metadata role check; the
+RLS-scoped family/puppy read (decision #1) is what actually grants or denies
+access to data — a user whose `auth.uid()` matches no family row simply sees the
+friendly "No family record found" state. `UserRole` stays the single literal
+`'family'` (requirement #1): it is the one nominal role every authenticated user
+carries, with RLS deciding what they can see.
+
+**This is a documented, intentional deviation** from the Crescentek standard's
+"role check in the auth saga before the session is stored" (§19). The standard
+assumes a server-controlled role claim exists; here none does, and the brief
+explicitly directs that a successful RLS-scoped read establish access rather than
+hard-failing login. The deviation is narrow: there are no write operations and
+RLS scopes every read, so storing a session for an authenticated user before the
+data read carries no privilege-escalation risk.
 
 ## 4. Session restore on boot + an `isInitializing` gate
 

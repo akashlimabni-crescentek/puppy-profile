@@ -3,7 +3,7 @@ import { eventChannel, type EventChannel } from 'redux-saga'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import { supabase } from '@utils/supabaseClient'
-import { mapSupabaseUser, getUserRole, type LoginCredentials } from '@app-types/auth.types'
+import { mapSupabaseUser, type LoginCredentials } from '@app-types/auth.types'
 import {
   initializeAuth,
   authInitialized,
@@ -17,16 +17,17 @@ import {
 import { resetPuppy } from '@store/puppySlice'
 
 /**
- * Single source of truth for the "is this user allowed in?" decision.
- * Family-tier only (requirement #1): an explicit 'family' role is required.
- * A missing or unknown role is access-denied — we never default-grant.
- */
-const isFamilyUser = (user: Session['user']): boolean => getUserRole(user) === 'family'
-
-/**
  * Handles login side effects.
  * takeLatest: if login is triggered multiple times, only the last call runs.
- * Enforces the family-tier role at the application level after Supabase auth.
+ *
+ * Authorization is delegated to RLS, not a metadata role gate. The staging user
+ * has no `app_metadata.role`, and `user_metadata.tier` is end-user-writable, so
+ * gating on either would be wrong (it would deny the legitimate family user, or
+ * trust a forgeable flag). A successful authentication stores the session; the
+ * RLS-scoped family/puppy read on the profile page is what actually grants or
+ * denies access to data (no family row → a friendly "no record" state). This is
+ * a documented deviation from the house "role check before session stored" rule
+ * — see §4.10 resolution in DECISIONS.md §3.
  */
 function* handleLogin(action: PayloadAction<LoginCredentials>) {
   try {
@@ -42,13 +43,6 @@ function* handleLogin(action: PayloadAction<LoginCredentials>) {
 
     if (!data.user || !data.session) {
       yield put(loginFailure('Login failed. Please try again.'))
-      return
-    }
-
-    // Application-level role enforcement (RLS is the primary DB-level enforcement).
-    if (!isFamilyUser(data.user)) {
-      yield call([supabase.auth, supabase.auth.signOut])
-      yield put(loginFailure('Access denied. This app is for family accounts only.'))
       return
     }
 
@@ -83,12 +77,8 @@ function* handleInitializeAuth() {
     } = yield call([supabase.auth, supabase.auth.getSession])
 
     if (session?.user) {
-      if (isFamilyUser(session.user)) {
-        yield put(setSession({ user: mapSupabaseUser(session.user) }))
-      } else {
-        // A persisted session that no longer satisfies the family rule → sign out.
-        yield call([supabase.auth, supabase.auth.signOut])
-      }
+      // Restore the session; RLS remains the authority on what data is visible.
+      yield put(setSession({ user: mapSupabaseUser(session.user) }))
     }
   } catch {
     // Treat any restore failure as "logged out"; never block app boot.
