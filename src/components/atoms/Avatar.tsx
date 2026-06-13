@@ -44,7 +44,7 @@ export const Avatar = memo<AvatarProps>(({ src, alt, size = 'lg', className = ''
         <div
           role="img"
           aria-label={alt}
-          className="w-full h-full flex items-center justify-center bg-tan-light text-copper-dark"
+          className="w-full h-full flex items-center justify-center bg-tan-light text-slate"
         >
           <Dog aria-hidden="true" className="w-1/2 h-1/2" strokeWidth={1.5} />
         </div>

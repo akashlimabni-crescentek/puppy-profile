@@ -21,7 +21,7 @@ export interface InfoRowProps {
 export const InfoRow = memo<InfoRowProps>(({ label, value, icon, className = '' }) => (
   <div
     className={`
-      flex items-center justify-between py-3
+      flex items-center justify-between py-4
       border-b border-hairline last:border-0
       ${className}
     `}

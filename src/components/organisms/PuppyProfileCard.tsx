@@ -1,11 +1,11 @@
 import { memo, useMemo } from 'react'
-import { Calendar, GraduationCap, Target } from 'lucide-react'
+import { Calendar, GraduationCap, PawPrint, Target } from 'lucide-react'
 import { Avatar } from '@atoms/Avatar'
 import { Typography } from '@atoms/Typography'
 import { InfoRow } from '@molecules/InfoRow'
 import { StatChip } from '@molecules/StatChip'
 import type { Puppy } from '@app-types/puppy.types'
-import { formatBirthday, formatProgramWeek } from '@utils/formatters'
+import { formatBirthday, formatProgramWeek, formatStatus } from '@utils/formatters'
 
 /** Shown when a puppy has no weekly focus set yet (nullable column). */
 const WEEKLY_FOCUS_EMPTY = "This week's focus will appear here."
@@ -25,12 +25,14 @@ export interface PuppyProfileCardProps {
 
 /**
  * Organism: PuppyProfileCard
- * Renders the six required fields for the authenticated family's puppy: name,
- * breed, birth date, program progress, weekly focus, and the family greeting.
+ * Renders the authenticated family's puppy: name, breed, status, birth date,
+ * program progress, weekly focus, and the family greeting.
  *
  * Layout follows the Stokeshire spec: a dark header zone (puppy name in
- * Cormorant Garamond on ink), a cream content zone, and white inner blocks.
- * Copper appears once — the program-week metric. Receives data as props only.
+ * Cormorant Garamond with the status as plain text on ink — no copper), then a cream content
+ * zone whose white inner blocks lead with breed, then program progress, birth
+ * date, and weekly focus. Copper appears once — the program-week metric.
+ * Receives data as props only.
  *
  * useMemo on formatted values prevents recalculation on unrelated re-renders.
  */
@@ -41,6 +43,7 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
       () => formatProgramWeek(puppy.currentWeek, puppy.programLengthWeeks),
       [puppy.currentWeek, puppy.programLengthWeeks]
     )
+    const formattedStatus = useMemo(() => formatStatus(puppy.status), [puppy.status])
     const hasWeeklyFocus = Boolean(puppy.weeklyFocus)
 
     return (
@@ -52,19 +55,28 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
         `}
         aria-label={`Puppy profile for ${puppy.name}`}
       >
-        {/* Dark header zone — puppy name + breed on ink */}
+        {/* Dark header zone — puppy name + status on ink */}
         <header className="flex flex-col items-center text-center bg-ink px-6 pt-8 pb-7">
           <Avatar src={puppy.photoUrl} alt={`Photo of ${puppy.name}`} size="lg" />
           <Typography as="h2" variant="h1" color="inverse" className="mt-4">
             {puppy.name}
           </Typography>
-          <Typography variant="bodySmall" color="muted" className="mt-1">
-            {puppy.breed}
+          <Typography variant="bodySmall" color="inverse" className="mt-2">
+            {formattedStatus}
           </Typography>
         </header>
 
-        {/* Cream content zone */}
-        <div className="flex flex-col gap-3 bg-cream p-4">
+        {/* Cream content zone — scrolls internally when content exceeds the available space */}
+        <div className="flex flex-col gap-3 bg-cream p-4 max-h-[60vh] overflow-y-auto">
+          {/* White inner card: breed */}
+          <div className="bg-white rounded-card border border-hairline px-4">
+            <InfoRow
+              label="Breed"
+              value={puppy.breed}
+              icon={<PawPrint size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
+            />
+          </div>
+
           {/* Single copper-accented key metric: program progress */}
           <StatChip
             label="Program progress"
@@ -82,7 +94,7 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
           </div>
 
           {/* White inner card: weekly focus (calm empty state when null) */}
-          <div className="bg-white rounded-card border border-hairline px-4 py-3">
+          <div className="bg-white rounded-card border border-hairline p-4">
             <div className="flex items-center gap-2">
               <span aria-hidden="true" className="flex items-center text-slate">
                 <Target size={ICON_SIZE} strokeWidth={ICON_STROKE} />

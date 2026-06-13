@@ -14,6 +14,11 @@ describe('PuppyProfileCard', () => {
     expect(screen.getByText('F1 Australian Mountain Dog')).toBeInTheDocument()
   })
 
+  it('renders the status in the header', () => {
+    render(<PuppyProfileCard puppy={mockPuppy} familyName="Testerson" />)
+    expect(screen.getByText('In school')).toBeInTheDocument()
+  })
+
   it('renders the birth date in a human-readable format', () => {
     render(<PuppyProfileCard puppy={mockPuppy} familyName="Testerson" />)
     expect(screen.getByText('March 14, 2026')).toBeInTheDocument()

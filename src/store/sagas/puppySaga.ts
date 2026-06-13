@@ -6,11 +6,14 @@ import { fetchPuppyRequest, fetchPuppySuccess, fetchPuppyFailure } from '@store/
 /** The combined embed row: a family with its RLS-scoped puppies nested via the FK. */
 type FamilyWithPuppiesRow = FamilyRow & { puppies: PuppyRow[] }
 
+/** Coerces a DB int column — PostgREST may return numbers as strings in JSON. */
+const toWeekInt = (value: number | string): number => Math.trunc(Number(value))
+
 /**
  * Maps a Supabase snake_case `puppies` row to the camelCase Puppy type.
  * All DB-to-app field mapping happens here — nowhere else.
  */
-const mapPuppyRow = (row: PuppyRow): Puppy => ({
+export const mapPuppyRow = (row: PuppyRow): Puppy => ({
   id: row.id,
   name: row.name,
   breed: row.breed,
@@ -18,8 +21,8 @@ const mapPuppyRow = (row: PuppyRow): Puppy => ({
   sire: row.sire,
   dam: row.dam,
   programType: row.program_type,
-  programLengthWeeks: row.program_length_weeks,
-  currentWeek: row.current_week,
+  programLengthWeeks: toWeekInt(row.program_length_weeks),
+  currentWeek: toWeekInt(row.current_week),
   weeklyFocus: row.weekly_focus,
   photoUrl: row.photo_url,
   status: row.status,

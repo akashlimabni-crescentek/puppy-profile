@@ -34,7 +34,7 @@
 
   /* Card */
   --radius-card: 16px;
-  --space-card-padding: 14px;
+  --space-card-padding: 16px;
   --border-card: 1px solid rgba(28, 28, 28, 0.07);
   --shadow-card: 0 1px 2px rgba(28, 28, 28, 0.04);
 }

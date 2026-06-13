@@ -51,8 +51,8 @@ export interface PuppyRow {
   sire: string | null
   dam: string | null
   program_type: string
-  program_length_weeks: number
-  current_week: number
+  program_length_weeks: number | string
+  current_week: number | string
   weekly_focus: string | null
   photo_url: string | null
   status: string

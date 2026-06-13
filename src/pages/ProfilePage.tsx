@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom'
 import { AlertCircle } from 'lucide-react'
 import { PuppyProfileCard } from '@organisms/PuppyProfileCard'
 import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
@@ -15,23 +14,14 @@ import { usePuppyProfile } from '@hooks/usePuppyProfile'
  * Renders skeleton while loading, error state on failure, card on success.
  */
 const ProfilePage = () => {
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
   const { puppy, familyName, isLoading, isError, error, retry } = usePuppyProfile()
-  const navigate = useNavigate()
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login', { replace: true })
-  }
 
   return (
     <main className="min-h-screen bg-parchment p-4">
       {/* Header bar */}
-      <header className="max-w-sm mx-auto flex items-center justify-between py-4 mb-6">
-        <Typography variant="label" color="secondary">
-          {user?.email}
-        </Typography>
-        <Button variant="ghost" size="sm" onClick={handleLogout}>
+      <header className="max-w-sm mx-auto flex items-center justify-end py-4 mb-6">
+        <Button variant="ghost" size="sm" onClick={logout}>
           Sign out
         </Button>
       </header>

@@ -106,12 +106,17 @@ describe('auth → fetch → render integration', () => {
     expect(maybeSingle).toHaveBeenCalledTimes(1)
   })
 
-  it('keeps an authenticated user with no visible family row on the no-record state', async () => {
-    // RLS, not a role flag, is the authorization gate: a user whose RLS query
-    // returns no family row is signed in but sees a friendly "no record" state.
+  it('keeps an authenticated family user with no visible family row on the no-record state', async () => {
+    // The user passes the family-tier gate, but their RLS query returns no family
+    // row — they stay signed in and see the friendly "no record" state.
     signInWithPassword.mockResolvedValue({
       data: {
-        user: { id: 'u2', email: 'other@test.com', app_metadata: { provider: 'email' } },
+        user: {
+          id: 'u2',
+          email: 'other@test.com',
+          app_metadata: { provider: 'email' },
+          user_metadata: { tier: 'family' },
+        },
         session: { access_token: 'token' },
       },
       error: null,

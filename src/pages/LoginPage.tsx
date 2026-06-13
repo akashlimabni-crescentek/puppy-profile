@@ -52,11 +52,6 @@ const LoginPage = () => {
           {/* Form */}
           <LoginForm onSubmit={handleSubmit} isLoading={isLoading} errorMessage={error} />
         </div>
-
-        {/* Footer note */}
-        <p className="text-center text-xs text-slate mt-6">
-          Family accounts only. Contact your administrator for access.
-        </p>
       </div>
     </main>
   )
