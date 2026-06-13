@@ -1,9 +1,10 @@
 import { memo, useState } from 'react'
+import { Dog } from 'lucide-react'
 
 export interface AvatarProps {
-  /** Image source URL */
-  src: string
-  /** Alt text for the image — required for accessibility */
+  /** Image source URL, or null when the family has not added a photo yet */
+  src: string | null
+  /** Alt text / accessible name for the avatar — required */
   alt: string
   /** Size variant */
   size?: 'sm' | 'md' | 'lg' | 'xl'
@@ -20,23 +21,32 @@ const sizeClasses: Record<NonNullable<AvatarProps['size']>, string> = {
 
 /**
  * Atom: Avatar
- * Circular image with paw emoji fallback on load error.
- * Used for puppy photos in the profile card.
+ * Circular puppy photo with a tasteful Lucide line placeholder (on a
+ * tan-light ground) when there is no photo or the image fails to load.
+ * A null photo is the default visible state for the staging seed.
+ *
+ * @example
+ * <Avatar src={puppy.photoUrl} alt={`Photo of ${puppy.name}`} size="lg" />
  */
 export const Avatar = memo<AvatarProps>(({ src, alt, size = 'lg', className = '' }) => {
   const [hasError, setHasError] = useState(false)
+  const showPlaceholder = !src || hasError
 
   return (
     <div
       className={`
         ${sizeClasses[size]} rounded-full overflow-hidden
-        bg-neutral-100 ring-4 ring-white shadow-card flex-shrink-0
+        bg-tan-light ring-4 ring-cream shadow-card flex-shrink-0
         ${className}
       `}
     >
-      {hasError ? (
-        <div className="w-full h-full flex items-center justify-center text-neutral-400 text-2xl">
-          🐾
+      {showPlaceholder ? (
+        <div
+          role="img"
+          aria-label={alt}
+          className="w-full h-full flex items-center justify-center bg-tan-light text-copper-dark"
+        >
+          <Dog aria-hidden="true" className="w-1/2 h-1/2" strokeWidth={1.5} />
         </div>
       ) : (
         <img

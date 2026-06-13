@@ -1,20 +1,25 @@
 import { describe, it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { Avatar } from './Avatar'
 
 describe('Avatar', () => {
   it('renders the image with correct alt text', () => {
-    render(<Avatar src="https://example.com/dog.jpg" alt="Biscuit" />)
-    expect(screen.getByAltText('Biscuit')).toBeInTheDocument()
+    render(<Avatar src="https://example.com/dog.jpg" alt="Maple" />)
+    expect(screen.getByAltText('Maple')).toBeInTheDocument()
   })
 
-  it('renders paw emoji fallback when image fails to load', async () => {
-    render(<Avatar src="https://broken.invalid/dog.jpg" alt="Broken" />)
-    const img = screen.getByAltText('Broken')
-    img.dispatchEvent(new Event('error'))
-    // After error, the paw fallback should render
-    const fallback = await screen.findByText('🐾')
-    expect(fallback).toBeInTheDocument()
+  it('renders the Lucide placeholder when src is null', () => {
+    const { container } = render(<Avatar src={null} alt="Maple" />)
+    expect(screen.queryByAltText('Maple')).not.toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Maple' })).toBeInTheDocument()
+    expect(container.querySelector('svg')).toBeInTheDocument()
+  })
+
+  it('renders the Lucide placeholder when the image fails to load', async () => {
+    const { container } = render(<Avatar src="https://broken.invalid/dog.jpg" alt="Broken" />)
+    screen.getByAltText('Broken').dispatchEvent(new Event('error'))
+    await waitFor(() => expect(container.querySelector('svg')).toBeInTheDocument())
+    expect(screen.queryByAltText('Broken')).not.toBeInTheDocument()
   })
 
   it('applies the correct size class for each size variant', () => {

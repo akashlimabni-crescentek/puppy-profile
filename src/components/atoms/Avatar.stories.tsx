@@ -39,6 +39,10 @@ export const ExtraLarge: Story = {
   args: { src: sampleSrc, alt: 'Extra large avatar', size: 'xl' },
 }
 
+export const NoPhoto: Story = {
+  args: { src: null, alt: 'Maple — no photo yet', size: 'lg' },
+}
+
 export const BrokenImage: Story = {
   args: { src: 'https://broken-url.invalid/image.jpg', alt: 'Broken image fallback', size: 'lg' },
 }
