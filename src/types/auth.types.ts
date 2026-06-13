@@ -40,13 +40,40 @@ export interface LoginFormValues {
 }
 
 /**
- * Maps a Supabase User to our AuthUser shape.
+ * Family-tier authorization gate for the login/boot UX.
  *
- * No metadata role check happens here or at the call site: the staging user has
- * no `app_metadata.role`, and `user_metadata` (which carries a `tier: 'family'`
- * flag) is end-user-writable and must never be trusted for authorization. RLS is
- * the authority — the RLS-scoped family/puppy read is what grants or denies
- * access to data. See DECISIONS.md §3.
+ * IMPORTANT: data security is owned entirely by Supabase RLS (`auth.uid()`), not
+ * by this function — a forged tier grants zero data because every read is
+ * RLS-scoped. This gate only decides whether a user reaches the profile UI or
+ * sees "Access denied". It reads the real JWT claims in priority order:
+ *
+ * 1. `app_metadata.role` — server-controlled and authoritative. If the client
+ *    sets it, it is the single source of truth ('family' allowed, anything else
+ *    denied). Currently absent on the staging user.
+ * 2. `user_metadata.tier` — the only "family" signal the staging user actually
+ *    carries ({ tier: 'family' }). It is end-user-writable, so it is treated as
+ *    an ADVISORY UX hint only (never a data boundary — RLS is). Recommend the
+ *    client migrate this to `app_metadata.role` server-side.
+ * 3. Neither present → allowed; RLS remains the sole gate.
+ *
+ * NB: `user.role` / the JWT `role` claim is the Postgres auth role
+ * ("authenticated") for every logged-in user — it is NOT a tier and is ignored.
+ * See DECISIONS.md §3.
+ */
+export const isFamilyTierAllowed = (user: User): boolean => {
+  const appRole = user.app_metadata?.role as string | null | undefined
+  if (appRole !== null && appRole !== undefined) return appRole === 'family'
+
+  const tier = user.user_metadata?.tier as string | null | undefined
+  if (tier !== null && tier !== undefined) return tier === 'family'
+
+  return false
+}
+
+/**
+ * Maps a Supabase User to our AuthUser shape.
+ * Callers verify access with {@link isFamilyTierAllowed} first (see authSaga);
+ * 'family' is the single nominal app role and RLS scopes what data is visible.
  */
 export const mapSupabaseUser = (user: User): AuthUser => ({
   id: user.id,

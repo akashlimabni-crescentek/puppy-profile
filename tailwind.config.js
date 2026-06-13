@@ -37,9 +37,9 @@ const tokens = {
   },
   fontFamily: {
     // Display / headers / puppy name
-    display: ['Cormorant Garamond', 'serif'],
+    display: ['Cormorant Garamond'],
     // Body / UI / labels / data
-    sans: ['Jost', 'sans-serif'],
+    sans: ['Jost'],
   },
   fontSize: {
     xs: ['0.75rem', { lineHeight: '1rem' }],

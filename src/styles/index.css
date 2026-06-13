@@ -29,8 +29,8 @@
   --stokeshire-parchment: #f5efe4;
 
   /* Typography */
-  --font-display: 'Cormorant Garamond', serif;
-  --font-sans: 'Jost', sans-serif;
+  --font-display: 'Cormorant Garamond';
+  --font-sans: 'Jost';
 
   /* Card */
   --radius-card: 16px;

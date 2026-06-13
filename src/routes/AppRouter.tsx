@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { ProtectedRoute } from './ProtectedRoute'
 import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
 import { useAppDispatch } from '@store/hooks'
@@ -49,9 +49,14 @@ const router = createBrowserRouter([
 
 export const AppRouter = () => {
   const dispatch = useAppDispatch()
+  const hasInitializedRef = useRef(false)
 
   // Restore any persisted Supabase session into Redux exactly once on boot.
+  // The ref guard keeps this to a single dispatch under React StrictMode, which
+  // would otherwise run this mount effect twice and call getSession twice.
   useEffect(() => {
+    if (hasInitializedRef.current) return
+    hasInitializedRef.current = true
     dispatch(initializeAuth())
   }, [dispatch])
 

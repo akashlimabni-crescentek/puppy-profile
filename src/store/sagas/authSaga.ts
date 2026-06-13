@@ -3,7 +3,7 @@ import { eventChannel, type EventChannel } from 'redux-saga'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import { supabase } from '@utils/supabaseClient'
-import { mapSupabaseUser, type LoginCredentials } from '@app-types/auth.types'
+import { mapSupabaseUser, isFamilyTierAllowed, type LoginCredentials } from '@app-types/auth.types'
 import {
   initializeAuth,
   authInitialized,
@@ -20,14 +20,11 @@ import { resetPuppy } from '@store/puppySlice'
  * Handles login side effects.
  * takeLatest: if login is triggered multiple times, only the last call runs.
  *
- * Authorization is delegated to RLS, not a metadata role gate. The staging user
- * has no `app_metadata.role`, and `user_metadata.tier` is end-user-writable, so
- * gating on either would be wrong (it would deny the legitimate family user, or
- * trust a forgeable flag). A successful authentication stores the session; the
- * RLS-scoped family/puppy read on the profile page is what actually grants or
- * denies access to data (no family row → a friendly "no record" state). This is
- * a documented deviation from the house "role check before session stored" rule
- * — see §4.10 resolution in DECISIONS.md §3.
+ * Authorization is enforced primarily by RLS. As defence in depth we also apply
+ * the family-tier UX gate (isFamilyTierAllowed): it checks `app_metadata.role`
+ * (authoritative when present), else `user_metadata.tier` (advisory — the staging
+ * user carries `tier: 'family'`), else admits and lets RLS scope the data. A
+ * forged tier grants no data because every read is RLS-scoped. See DECISIONS.md §3.
  */
 function* handleLogin(action: PayloadAction<LoginCredentials>) {
   try {
@@ -43,6 +40,13 @@ function* handleLogin(action: PayloadAction<LoginCredentials>) {
 
     if (!data.user || !data.session) {
       yield put(loginFailure('Login failed. Please try again.'))
+      return
+    }
+
+    // Family-tier gate (active only when a trusted app_metadata.role exists).
+    if (!isFamilyTierAllowed(data.user)) {
+      yield call([supabase.auth, supabase.auth.signOut])
+      yield put(loginFailure('Access denied. This app is for family accounts only.'))
       return
     }
 
@@ -77,8 +81,13 @@ function* handleInitializeAuth() {
     } = yield call([supabase.auth, supabase.auth.getSession])
 
     if (session?.user) {
-      // Restore the session; RLS remains the authority on what data is visible.
-      yield put(setSession({ user: mapSupabaseUser(session.user) }))
+      if (isFamilyTierAllowed(session.user)) {
+        // Restore the session; RLS remains the authority on what data is visible.
+        yield put(setSession({ user: mapSupabaseUser(session.user) }))
+      } else {
+        // A persisted session whose trusted role is no longer 'family' → sign out.
+        yield call([supabase.auth, supabase.auth.signOut])
+      }
     }
   } catch {
     // Treat any restore failure as "logged out"; never block app boot.

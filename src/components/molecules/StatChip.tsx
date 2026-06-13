@@ -34,7 +34,9 @@ export const StatChip = memo<StatChipProps>(({ label, value, icon, className = '
       <Typography variant="caption" color="secondary">
         {label}
       </Typography>
-      <span className="font-sans text-lg font-bold leading-none text-copper-dark">{value}</span>
+      <span className="font-sans text-lg font-bold leading-none lining-nums tabular-nums text-copper-dark">
+        {value}
+      </span>
     </div>
   </div>
 ))

@@ -1,4 +1,5 @@
 /* eslint-disable camelcase -- this file mocks the external Supabase API shape (snake_case) */
+import { StrictMode } from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
@@ -88,12 +89,15 @@ describe('auth → fetch → render integration', () => {
 
     await waitFor(() => expect(store.getState().auth.isAuthenticated).toBe(true))
 
+    // StrictMode double-invokes the mount effect; the fetch must still fire once.
     render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <ProfilePage />
-        </MemoryRouter>
-      </Provider>
+      <StrictMode>
+        <Provider store={store}>
+          <MemoryRouter>
+            <ProfilePage />
+          </MemoryRouter>
+        </Provider>
+      </StrictMode>
     )
 
     expect(await screen.findByText(mockPuppy.name)).toBeInTheDocument()
@@ -129,5 +133,51 @@ describe('auth → fetch → render integration', () => {
 
     expect(await screen.findByText(/no family record found/i)).toBeInTheDocument()
     expect(store.getState().auth.isAuthenticated).toBe(true)
+  })
+
+  it('rejects a user whose trusted app_metadata.role is not family', async () => {
+    // Future-proof gate: once the client sets app_metadata.role, a non-family
+    // value is rejected at login (signed out, never authenticated).
+    signInWithPassword.mockResolvedValue({
+      data: {
+        user: {
+          id: 'u3',
+          email: 'staff@test.com',
+          app_metadata: { provider: 'email', role: 'staff' },
+        },
+        session: { access_token: 'token' },
+      },
+      error: null,
+    })
+
+    const store = makeStore()
+    store.dispatch(loginRequest({ email: 'staff@test.com', password: 'secret' }))
+
+    await waitFor(() => expect(store.getState().auth.error).not.toBeNull())
+    expect(store.getState().auth.isAuthenticated).toBe(false)
+    expect(signOut).toHaveBeenCalledTimes(1)
+  })
+
+  it('rejects a user whose user_metadata.tier is not family (advisory UX gate)', async () => {
+    // No authoritative app_metadata.role, and the advisory tier says non-family.
+    signInWithPassword.mockResolvedValue({
+      data: {
+        user: {
+          id: 'u4',
+          email: 'staff2@test.com',
+          app_metadata: { provider: 'email' },
+          user_metadata: { tier: 'staff' },
+        },
+        session: { access_token: 'token' },
+      },
+      error: null,
+    })
+
+    const store = makeStore()
+    store.dispatch(loginRequest({ email: 'staff2@test.com', password: 'secret' }))
+
+    await waitFor(() => expect(store.getState().auth.error).not.toBeNull())
+    expect(store.getState().auth.isAuthenticated).toBe(false)
+    expect(signOut).toHaveBeenCalledTimes(1)
   })
 })
