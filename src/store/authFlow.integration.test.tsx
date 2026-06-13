@@ -31,22 +31,32 @@ const { makeStore } = await import('@store/store')
 const { loginRequest } = await import('@store/authSlice')
 const { default: ProfilePage } = await import('@pages/ProfilePage')
 
-/** The raw snake_case row Supabase would return, derived from the camelCase fixture. */
+/** The raw snake_case puppy row Supabase would return, derived from the fixture. */
 const puppyRow = {
   id: mockPuppy.id,
   name: mockPuppy.name,
   breed: mockPuppy.breed,
-  age_months: mockPuppy.ageMonths,
-  weight_kg: mockPuppy.weightKg,
+  birth_date: mockPuppy.birthDate,
+  sire: mockPuppy.sire,
+  dam: mockPuppy.dam,
+  program_type: mockPuppy.programType,
+  program_length_weeks: mockPuppy.programLengthWeeks,
+  current_week: mockPuppy.currentWeek,
+  weekly_focus: mockPuppy.weeklyFocus,
   photo_url: mockPuppy.photoUrl,
+  status: mockPuppy.status,
   family_id: mockPuppy.familyId,
-  gender: mockPuppy.gender,
-  color: mockPuppy.color,
-  vaccination_status: mockPuppy.vaccinationStatus,
-  microchip_id: mockPuppy.microchipId,
-  birthday: mockPuppy.birthday,
   created_at: mockPuppy.createdAt,
-  updated_at: mockPuppy.updatedAt,
+}
+
+/** The combined embed Supabase returns: the family row with its puppies nested. */
+const familyRow = {
+  id: mockPuppy.familyId,
+  auth_user_id: 'u1',
+  family_name: 'Testerson',
+  email: 'fam@test.com',
+  created_at: mockPuppy.createdAt,
+  puppies: [puppyRow],
 }
 
 describe('auth → fetch → render integration', () => {
@@ -64,7 +74,7 @@ describe('auth → fetch → render integration', () => {
       },
       error: null,
     })
-    maybeSingle.mockResolvedValue({ data: puppyRow, error: null })
+    maybeSingle.mockResolvedValue({ data: familyRow, error: null })
 
     const store = makeStore()
     store.dispatch(loginRequest({ email: 'fam@test.com', password: 'secret' }))

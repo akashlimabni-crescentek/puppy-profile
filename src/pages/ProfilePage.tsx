@@ -15,7 +15,7 @@ import { usePuppyProfile } from '@hooks/usePuppyProfile'
  */
 const ProfilePage = () => {
   const { user, logout } = useAuth()
-  const { puppy, isLoading, isError, error, retry } = usePuppyProfile()
+  const { puppy, familyName, isLoading, isError, error, retry } = usePuppyProfile()
   const navigate = useNavigate()
 
   const handleLogout = () => {
@@ -59,7 +59,7 @@ const ProfilePage = () => {
         {/* Success state — wrapped in CardErrorBoundary as a safety net */}
         {puppy && !isLoading && (
           <CardErrorBoundary fallbackMessage="Unable to display puppy profile">
-            <PuppyProfileCard puppy={puppy} />
+            <PuppyProfileCard puppy={puppy} familyName={familyName} />
           </CardErrorBoundary>
         )}
       </section>

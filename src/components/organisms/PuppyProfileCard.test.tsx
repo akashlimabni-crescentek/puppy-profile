@@ -1,41 +1,41 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { PuppyProfileCard } from './PuppyProfileCard'
-import { mockPuppy, mockPuppyFemale, mockPuppyOverdue } from '@utils/mockData'
+import { mockPuppy, mockPuppyNoFocus } from '@utils/mockData'
 
 describe('PuppyProfileCard', () => {
   it('renders the puppy name', () => {
-    render(<PuppyProfileCard puppy={mockPuppy} />)
-    expect(screen.getByText('Biscuit')).toBeInTheDocument()
+    render(<PuppyProfileCard puppy={mockPuppy} familyName="Testerson" />)
+    expect(screen.getByText('Maple')).toBeInTheDocument()
   })
 
   it('renders the breed', () => {
-    render(<PuppyProfileCard puppy={mockPuppy} />)
-    expect(screen.getByText('Golden Retriever')).toBeInTheDocument()
+    render(<PuppyProfileCard puppy={mockPuppy} familyName="Testerson" />)
+    expect(screen.getByText('F1 Australian Mountain Dog')).toBeInTheDocument()
   })
 
-  it('renders vaccination status as a badge', () => {
-    render(<PuppyProfileCard puppy={mockPuppy} />)
-    expect(screen.getAllByText('Up to date').length).toBeGreaterThan(0)
+  it('renders the birth date in a human-readable format', () => {
+    render(<PuppyProfileCard puppy={mockPuppy} familyName="Testerson" />)
+    expect(screen.getByText('March 14, 2026')).toBeInTheDocument()
   })
 
-  it('renders "Due soon" warning badge for due-soon status', () => {
-    render(<PuppyProfileCard puppy={mockPuppyFemale} />)
-    expect(screen.getAllByText('Due soon').length).toBeGreaterThan(0)
+  it('renders program progress as "Week X of Y"', () => {
+    render(<PuppyProfileCard puppy={mockPuppy} familyName="Testerson" />)
+    expect(screen.getByText('Week 2 of 4')).toBeInTheDocument()
   })
 
-  it('renders "Overdue" error badge for overdue status', () => {
-    render(<PuppyProfileCard puppy={mockPuppyOverdue} />)
-    expect(screen.getAllByText('Overdue').length).toBeGreaterThan(0)
+  it('renders the weekly focus when present', () => {
+    render(<PuppyProfileCard puppy={mockPuppy} familyName="Testerson" />)
+    expect(screen.getByText(mockPuppy.weeklyFocus as string)).toBeInTheDocument()
   })
 
-  it('renders microchip ID when present', () => {
-    render(<PuppyProfileCard puppy={mockPuppy} />)
-    expect(screen.getByText('MC-9876543210')).toBeInTheDocument()
+  it('renders a calm empty line when weekly focus is null', () => {
+    render(<PuppyProfileCard puppy={mockPuppyNoFocus} familyName="Testerson" />)
+    expect(screen.getByText("This week's focus will appear here.")).toBeInTheDocument()
   })
 
-  it('does not render microchip row when microchipId is absent', () => {
-    render(<PuppyProfileCard puppy={{ ...mockPuppy, microchipId: undefined }} />)
-    expect(screen.queryByText('Microchip')).not.toBeInTheDocument()
+  it('renders the family greeting', () => {
+    render(<PuppyProfileCard puppy={mockPuppy} familyName="Testerson" />)
+    expect(screen.getByText('Welcome, the Testerson family')).toBeInTheDocument()
   })
 })

@@ -16,7 +16,7 @@ import { fetchPuppyRequest, resetPuppy } from '@store/puppySlice'
  */
 export const usePuppyProfile = () => {
   const dispatch = useAppDispatch()
-  const { data: puppy, status, error } = useAppSelector((state) => state.puppy)
+  const { data: puppy, familyName, status, error } = useAppSelector((state) => state.puppy)
 
   useEffect(() => {
     if (status !== 'idle') return
@@ -30,6 +30,7 @@ export const usePuppyProfile = () => {
 
   return {
     puppy,
+    familyName,
     isLoading: status === 'loading' || status === 'idle',
     isError: status === 'failed',
     error,
