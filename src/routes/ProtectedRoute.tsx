@@ -16,7 +16,7 @@ export const ProtectedRoute = () => {
 
   if (isInitializing) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center p-4">
+      <main className="min-h-screen bg-parchment flex items-center justify-center p-4">
         <PuppyCardSkeleton />
       </main>
     )

@@ -1,4 +1,5 @@
 import { memo, forwardRef, type InputHTMLAttributes } from 'react'
+import { AlertCircle } from 'lucide-react'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   /** Visible label text */
@@ -22,10 +23,10 @@ export const Input = memo(
 
       return (
         <div className="flex flex-col gap-1.5">
-          <label htmlFor={inputId} className="text-sm font-medium text-neutral-700">
+          <label htmlFor={inputId} className="text-sm font-medium text-ink">
             {label}
             {props.required && (
-              <span className="text-red-500 ml-1" aria-hidden="true">
+              <span className="text-error ml-1" aria-hidden="true">
                 *
               </span>
             )}
@@ -39,14 +40,10 @@ export const Input = memo(
               hasError ? `${inputId}-error` : helperText ? `${inputId}-helper` : undefined
             }
             className={`
-              w-full px-4 py-3 rounded-xl border text-base text-neutral-900
-              placeholder:text-neutral-400 bg-white transition-colors outline-none
-              focus:ring-2 focus:ring-primary-500 focus:border-primary-500
-              ${
-                hasError
-                  ? 'border-red-400 focus:ring-red-300'
-                  : 'border-neutral-300 hover:border-neutral-400'
-              }
+              w-full px-4 py-3 rounded-xl border text-base text-ink
+              placeholder:text-slate bg-white transition-colors outline-none
+              focus:ring-2 focus:ring-copper focus:border-copper
+              ${hasError ? 'border-error focus:ring-error' : 'border-tan-dark hover:border-copper-light'}
               ${className}
             `}
             {...props}
@@ -56,14 +53,15 @@ export const Input = memo(
             <span
               id={`${inputId}-error`}
               role="alert"
-              className="text-xs text-red-600 flex items-center gap-1"
+              className="text-xs text-error flex items-center gap-1"
             >
-              <span aria-hidden="true">⚠</span> {errorMessage}
+              <AlertCircle size={13} strokeWidth={1.75} aria-hidden="true" />
+              {errorMessage}
             </span>
           )}
 
           {helperText && !hasError && (
-            <span id={`${inputId}-helper`} className="text-xs text-neutral-400">
+            <span id={`${inputId}-helper`} className="text-xs text-slate">
               {helperText}
             </span>
           )}

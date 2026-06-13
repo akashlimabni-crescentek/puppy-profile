@@ -56,7 +56,7 @@ export const LoginForm = memo<LoginFormProps>(({ onSubmit, isLoading = false, er
     <form onSubmit={handleSubmit(handleFormSubmit)} noValidate className="flex flex-col gap-5">
       {/* Auth-level error (wrong credentials, etc.) */}
       {errorMessage && (
-        <div role="alert" className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+        <div role="alert" className="bg-error/10 border border-error/30 rounded-xl px-4 py-3">
           <Typography variant="bodySmall" color="error">
             {errorMessage}
           </Typography>

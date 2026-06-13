@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { PawPrint } from 'lucide-react'
 import { LoginForm } from '@organisms/LoginForm'
 import { Typography } from '@atoms/Typography'
 import { useAuth } from '@hooks/useAuth'
@@ -27,17 +28,18 @@ const LoginPage = () => {
   }
 
   return (
-    <main
-      className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50
-                     flex items-center justify-center p-4"
-    >
+    <main className="min-h-screen bg-parchment flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Card */}
-        <div className="bg-white rounded-3xl shadow-card p-8">
+        <div className="bg-white rounded-card border border-hairline shadow-card p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="text-5xl mb-4" role="img" aria-label="Puppy paw">
-              🐾
+            <div
+              className="mx-auto mb-4 w-16 h-16 rounded-full bg-tan-light flex items-center justify-center text-copper"
+              role="img"
+              aria-label="Stokeshire"
+            >
+              <PawPrint size={28} strokeWidth={1.75} aria-hidden="true" />
             </div>
             <Typography variant="h2" color="primary">
               Welcome back
@@ -52,7 +54,7 @@ const LoginPage = () => {
         </div>
 
         {/* Footer note */}
-        <p className="text-center text-xs text-neutral-400 mt-6">
+        <p className="text-center text-xs text-slate mt-6">
           Family accounts only. Contact your administrator for access.
         </p>
       </div>

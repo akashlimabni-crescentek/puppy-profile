@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { AlertCircle } from 'lucide-react'
 import { PuppyProfileCard } from '@organisms/PuppyProfileCard'
 import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
 import { Button } from '@atoms/Button'
@@ -24,7 +25,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 p-4">
+    <main className="min-h-screen bg-parchment p-4">
       {/* Header bar */}
       <header className="max-w-sm mx-auto flex items-center justify-between py-4 mb-6">
         <Typography variant="label" color="secondary">
@@ -42,8 +43,10 @@ const ProfilePage = () => {
 
         {/* Error state */}
         {isError && !isLoading && (
-          <div className="max-w-sm mx-auto bg-white rounded-3xl shadow-card p-8 text-center">
-            <div className="text-4xl mb-3">😔</div>
+          <div className="max-w-sm mx-auto bg-white rounded-card border border-hairline shadow-card p-8 text-center">
+            <div className="flex justify-center mb-3 text-slate">
+              <AlertCircle size={32} strokeWidth={1.5} aria-hidden="true" />
+            </div>
             <Typography variant="h4" color="primary" className="mb-2">
               Could not load profile
             </Typography>
