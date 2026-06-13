@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Calendar, Target } from 'lucide-react'
 import { InfoRow } from './InfoRow'
 import { Badge } from '@atoms/Badge'
 
@@ -19,21 +20,29 @@ export default meta
 type Story = StoryObj<typeof InfoRow>
 
 export const StringValue: Story = {
-  args: { label: 'Birthday', value: 'April 10, 2023', icon: '📅' },
+  args: {
+    label: 'Birth date',
+    value: 'March 14, 2026',
+    icon: <Calendar size={16} strokeWidth={1.75} />,
+  },
 }
 
-export const BadgeValue: Story = {
+export const NodeValue: Story = {
   args: {
-    label: 'Vaccination',
-    icon: '💉',
-    value: <Badge label="Up to date" variant="success" icon="✓" />,
+    label: 'Status',
+    icon: <Target size={16} strokeWidth={1.75} />,
+    value: <Badge label="In school" variant="neutral" />,
   },
 }
 
 export const NoIcon: Story = {
-  args: { label: 'Microchip ID', value: 'MC-9876543210' },
+  args: { label: 'Program', value: 'Doodle School' },
 }
 
 export const LongValue: Story = {
-  args: { label: 'Family ID', value: 'fam-abc123-def456-ghi789', icon: '🏠' },
+  args: {
+    label: 'Weekly focus',
+    value: 'Novel surfaces and gentle handling; building calm recovery after startle.',
+    icon: <Target size={16} strokeWidth={1.75} />,
+  },
 }

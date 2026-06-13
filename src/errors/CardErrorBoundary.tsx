@@ -1,4 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react'
+import { AlertCircle } from 'lucide-react'
 
 interface Props {
   children: ReactNode
@@ -35,13 +36,15 @@ export class CardErrorBoundary extends Component<Props, State> {
       return (
         <div
           className="flex flex-col items-center justify-center p-8 text-center
-                        bg-white rounded-3xl shadow-card max-w-sm mx-auto"
+                        bg-white rounded-card border border-hairline shadow-card max-w-sm mx-auto"
         >
-          <div className="text-4xl mb-3">🐶</div>
-          <p className="text-neutral-600 font-medium">
+          <div className="flex justify-center mb-3 text-slate">
+            <AlertCircle size={28} strokeWidth={1.5} aria-hidden="true" />
+          </div>
+          <p className="text-ink font-medium">
             {this.props.fallbackMessage ?? 'Unable to load puppy profile'}
           </p>
-          <p className="text-neutral-400 text-sm mt-1">Please try refreshing the page</p>
+          <p className="text-slate text-sm mt-1">Please try refreshing the page</p>
         </div>
       )
     }
