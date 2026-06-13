@@ -3,7 +3,7 @@
 **Reviewer:** Senior architecture review
 **Date:** 2026-06-12
 **Scope:** Full `src/` tree, build/tooling config, and alignment with the client's deliverable + evaluation criteria.
-**Status:** Findings only — no code changes applied. Apply in priority order below.
+**Status:** Findings (§1–§8) were the pre-implementation review. **All P0/P1/P2 items are now resolved and the Stokeshire alignment is complete — see §9 (2026-06-13).**
 
 ---
 
@@ -125,7 +125,11 @@ Severity legend:
 
 ---
 
-## 6. ⛔ Blocked on client assets (cannot be completed correctly yet)
+## 6. ⛔ Blocked on client assets (RESOLVED 2026-06-13 — see §9)
+
+> Historical: at review time the two highest-weighted axes depended on assets not
+> yet provided. The design spec and staging schema/credentials have since arrived
+> and been applied — see §9.
 
 The two highest-weighted evaluation axes depend on assets not yet provided:
 
@@ -150,3 +154,57 @@ The two highest-weighted evaluation axes depend on assets not yet provided:
 - **A short `DECISIONS.md`** (or PR descriptions) explaining *why* RLS scoping needs no client filter, why Redux holds only `AuthUser`, etc. The client explicitly grades communication.
 - **Accessibility pass**: `addon-a11y` is installed — run it and note results; reviewers notice a11y on a card UI.
 - **A single happy-path integration test** (login → fetch → render card) using a mocked Supabase client, proving the *one* API call per session claim from requirement #15.
+
+---
+
+## 9. Resolution — Stokeshire alignment (2026-06-13)
+
+The earlier P0/P1/P2 findings were addressed, and the deliverable is now aligned
+to the authoritative schema and design spec. Status by axis:
+
+### Schema (#2) — done
+- Replaced all guessed fields (`ageMonths`, `weightKg`, `gender`, `color`,
+  `vaccinationStatus`, `microchipId`, `birthday`, `updatedAt`) with the real
+  `families` + `puppies` schema. camelCase app types + snake_case row types in
+  `src/types/puppy.types.ts`; mapping isolated in `puppySaga.ts`
+  (`mapPuppyRow`, `mapFamilyRow`).
+
+### RLS query shape (#2, P1-1/P1-2) — done & validated against staging
+- **One combined embed:** `supabase.from('families').select('*, puppies(*)').maybeSingle()`
+  — no client-side `family_id`; RLS scopes both the family row (`auth_user_id =
+  auth.uid()`) and the embedded puppies. Validated against staging (returns
+  Testerson + Maple), preserves the one-fetch guarantee, and carries the family
+  name for the greeting. This is a **documented deviation** from the house
+  belt-and-suspenders rule (§9/§19/§22) — see `DECISIONS.md` §1.
+
+### Authorization role source (P1-3, §4.10) — resolved against staging
+- Inspected the staging user's JWT: **no `app_metadata.role`** (only an untrusted
+  `user_metadata.tier`). The previous `app_metadata.role === 'family'` gate would
+  have hard-failed the legitimate family user. Resolution: **RLS is the
+  authorization gate** — login no longer hard-fails on a missing role; the
+  RLS-scoped read grants/denies data access. Documented in `DECISIONS.md` §3 as a
+  conscious deviation from "role check before session stored" (§19), safe because
+  all reads are RLS-scoped and there are no writes.
+
+### Greeting data path — done
+- `families.family_name` flows: saga embed → `mapFamilyRow` → success payload
+  `{ puppy, familyName }` → slice → `usePuppyProfile` → `ProfilePage` →
+  `PuppyProfileCard` ("Welcome, the {familyName} family"). Never derived from the
+  email or hardcoded.
+
+### Design fidelity (#3) — done
+- Stokeshire vendor spec applied verbatim: Cormorant Garamond (display) + Jost
+  (body/data), the `--stokeshire-*` palette, dark header / cream content / white
+  inner-card hierarchy, copper reserved for the single program-week metric and
+  primary CTAs, Lucide line icons (no emoji), null `photo_url` → on-brand Lucide
+  avatar placeholder, null `weekly_focus` → calm empty line. Tokens live only in
+  `tailwind.config.js` + `index.css`.
+
+### Earlier findings
+- **N-1 (formatBirthday)** resolved: local-time parse, `en-US`, "March 14, 2026".
+- **P0-1/P0-2/P0-3, P2-1…P2-4** were already implemented before this alignment
+  (session restore + `isInitializing` gate, idle-only auto-fetch, axios/mock-auth
+  removed, minimal `AuthUser` in Redux, router with catch-all).
+
+All six pre-delivery gate commands pass (type-check, lint, format:check,
+test:run, build, build-storybook).

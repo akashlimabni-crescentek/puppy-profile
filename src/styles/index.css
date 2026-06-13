@@ -1,36 +1,42 @@
-/* Import Inter font — TODO: Replace with client font when design spec is received */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Stokeshire typefaces — Cormorant Garamond (display) + Jost (body/UI/data) */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Jost:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /**
- * CSS Custom Properties (Design Tokens)
- * TODO: Replace these values with client-provided design spec tokens.
- * These mirror the tailwind.config.js tokens for use in non-Tailwind contexts.
+ * CSS Custom Properties — Stokeshire design tokens.
+ * These mirror tailwind.config.js for use in non-Tailwind contexts.
+ * Names are authoritative (--stokeshire-*) and must not be renamed.
  */
 :root {
-  /* Colors — TODO: Replace with client tokens */
-  --color-primary: #c026d3;
-  --color-primary-light: #fae8ff;
-  --color-accent: #f97316;
-  --color-accent-light: #fff7ed;
+  /* Primary */
+  --stokeshire-tan: #e4dfd8;
+  --stokeshire-blue: #9ca5b0;
+  --stokeshire-copper: #9c723a; /* HERO ACCENT — use sparingly */
+  --stokeshire-black: #1c1c1c;
 
-  /* Typography — TODO: Replace with client font */
-  --font-sans: 'Inter', system-ui, sans-serif;
+  /* UI neutral */
+  --stokeshire-slate: rgba(82, 82, 82, 0.7);
 
-  /* Spacing — TODO: Replace with client spacing scale */
-  --space-card-padding: 1.5rem;
-  --space-section-gap: 1rem;
+  /* Supporting */
+  --stokeshire-tan-light: #f2efea;
+  --stokeshire-tan-dark: #cfc7bc;
+  --stokeshire-copper-light: #c29a5a;
+  --stokeshire-copper-dark: #6e4f27;
+  --stokeshire-cream: #faf7f2;
+  --stokeshire-parchment: #f5efe4;
 
-  /* Shadows */
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.08);
-  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+  /* Typography */
+  --font-display: 'Cormorant Garamond';
+  --font-sans: 'Jost';
 
-  /* Radius */
-  --radius-card: 1.5rem;
-  --radius-button: 0.75rem;
+  /* Card */
+  --radius-card: 16px;
+  --space-card-padding: 16px;
+  --border-card: 1px solid rgba(28, 28, 28, 0.07);
+  --shadow-card: 0 1px 2px rgba(28, 28, 28, 0.04);
 }
 
 /* Base resets */
@@ -52,12 +58,12 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: theme('colors.neutral.50');
-  color: theme('colors.neutral.900');
+  background-color: var(--stokeshire-cream);
+  color: var(--stokeshire-black);
   min-height: 100dvh;
 }
 
-/* Hide scrollbar on stat chips row without disabling scroll */
+/* Hide scrollbar on horizontally scrollable rows without disabling scroll */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -79,6 +85,6 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--stokeshire-copper);
   outline-offset: 2px;
 }

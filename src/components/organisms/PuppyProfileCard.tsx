@@ -1,124 +1,127 @@
 import { memo, useMemo } from 'react'
+import { Calendar, GraduationCap, PawPrint, Target } from 'lucide-react'
 import { Avatar } from '@atoms/Avatar'
-import { Badge, type BadgeVariant } from '@atoms/Badge'
 import { Typography } from '@atoms/Typography'
 import { InfoRow } from '@molecules/InfoRow'
 import { StatChip } from '@molecules/StatChip'
 import type { Puppy } from '@app-types/puppy.types'
-import {
-  formatAge,
-  formatWeight,
-  formatBirthday,
-  capitalizeFirst,
-  formatVaccinationStatus,
-} from '@utils/formatters'
+import { formatBirthday, formatProgramWeek, formatStatus } from '@utils/formatters'
+
+/** Shown when a puppy has no weekly focus set yet (nullable column). */
+const WEEKLY_FOCUS_EMPTY = "This week's focus will appear here."
+
+/** Lucide line-icon sizing for the card's UI contexts (spec: 13–17px, stroke 1.5–2). */
+const ICON_SIZE = 16
+const ICON_STROKE = 1.75
 
 export interface PuppyProfileCardProps {
   /** The puppy data to display */
   puppy: Puppy
+  /** The family name for the greeting line, e.g. "Testerson" */
+  familyName: string | null
   /** Additional Tailwind classes for the card container */
   className?: string
 }
 
 /**
- * Maps vaccination status to Badge variant.
- * Memoized outside the component so it's not recreated on every render.
- */
-const vaccinationVariantMap: Record<Puppy['vaccinationStatus'], BadgeVariant> = {
-  'up-to-date': 'success',
-  'due-soon': 'warning',
-  overdue: 'error',
-}
-
-const vaccinationIconMap: Record<Puppy['vaccinationStatus'], string> = {
-  'up-to-date': '✓',
-  'due-soon': '⚠',
-  overdue: '✗',
-}
-
-/**
  * Organism: PuppyProfileCard
- * The main card component. Composes atoms and molecules to render
- * the full puppy profile. Receives data as props — no Redux connection.
+ * Renders the authenticated family's puppy: name, breed, status, birth date,
+ * program progress, weekly focus, and the family greeting.
+ *
+ * Layout follows the Stokeshire spec: a dark header zone (puppy name in
+ * Cormorant Garamond with the status as plain text on ink — no copper), then a cream content
+ * zone whose white inner blocks lead with breed, then program progress, birth
+ * date, and weekly focus. Copper appears once — the program-week metric.
+ * Receives data as props only.
  *
  * useMemo on formatted values prevents recalculation on unrelated re-renders.
- * TODO: Update layout when client provides design spec.
  */
-export const PuppyProfileCard = memo<PuppyProfileCardProps>(({ puppy, className = '' }) => {
-  const formattedAge = useMemo(() => formatAge(puppy.ageMonths), [puppy.ageMonths])
-  const formattedWeight = useMemo(() => formatWeight(puppy.weightKg), [puppy.weightKg])
-  const formattedBirthday = useMemo(() => formatBirthday(puppy.birthday), [puppy.birthday])
-  const vaccinationLabel = useMemo(
-    () => formatVaccinationStatus(puppy.vaccinationStatus),
-    [puppy.vaccinationStatus]
-  )
+export const PuppyProfileCard = memo<PuppyProfileCardProps>(
+  ({ puppy, familyName, className = '' }) => {
+    const formattedBirthDate = useMemo(() => formatBirthday(puppy.birthDate), [puppy.birthDate])
+    const programWeek = useMemo(
+      () => formatProgramWeek(puppy.currentWeek, puppy.programLengthWeeks),
+      [puppy.currentWeek, puppy.programLengthWeeks]
+    )
+    const formattedStatus = useMemo(() => formatStatus(puppy.status), [puppy.status])
+    const hasWeeklyFocus = Boolean(puppy.weeklyFocus)
 
-  return (
-    <article
-      className={`
-        bg-white rounded-3xl shadow-card overflow-hidden
-        w-full max-w-sm mx-auto
-        ${className}
-      `}
-      aria-label={`Puppy profile for ${puppy.name}`}
-    >
-      {/* Header banner — TODO: Replace gradient with client design spec */}
-      <div className="bg-gradient-to-br from-primary-200 to-accent-200 h-24 relative" />
+    return (
+      <article
+        className={`
+          bg-cream rounded-card border border-hairline shadow-card overflow-hidden
+          w-full max-w-sm mx-auto
+          ${className}
+        `}
+        aria-label={`Puppy profile for ${puppy.name}`}
+      >
+        {/* Dark header zone — puppy name + status on ink */}
+        <header className="flex flex-col items-center text-center bg-ink px-6 pt-8 pb-7">
+          <Avatar src={puppy.photoUrl} alt={`Photo of ${puppy.name}`} size="lg" />
+          <Typography as="h2" variant="h1" color="inverse" className="mt-4">
+            {puppy.name}
+          </Typography>
+          <Typography variant="bodySmall" color="inverse" className="mt-2">
+            {formattedStatus}
+          </Typography>
+        </header>
 
-      {/* Avatar + badges */}
-      <div className="px-6 -mt-12 flex justify-between items-end">
-        <Avatar src={puppy.photoUrl} alt={`Photo of ${puppy.name}`} size="lg" />
-        <div className="flex flex-wrap gap-2 pb-2 justify-end">
-          <Badge
-            label={capitalizeFirst(puppy.gender)}
-            variant={puppy.gender === 'male' ? 'info' : 'neutral'}
-            icon={puppy.gender === 'male' ? '♂' : '♀'}
-          />
-          <Badge
-            label={vaccinationLabel}
-            variant={vaccinationVariantMap[puppy.vaccinationStatus]}
-            icon={vaccinationIconMap[puppy.vaccinationStatus]}
-          />
-        </div>
-      </div>
-
-      {/* Name + breed */}
-      <div className="px-6 pt-4 pb-2">
-        <Typography variant="h2" color="primary">
-          {puppy.name}
-        </Typography>
-        <Typography variant="body" color="secondary" className="mt-0.5">
-          {puppy.breed}
-        </Typography>
-      </div>
-
-      {/* Stat chips */}
-      <div className="px-6 py-4 flex gap-3 overflow-x-auto scrollbar-hide">
-        <StatChip label="Age" value={formattedAge} icon="🎂" />
-        <StatChip label="Weight" value={formattedWeight} icon="⚖️" />
-        <StatChip label="Color" value={capitalizeFirst(puppy.color)} icon="🎨" />
-      </div>
-
-      {/* Details section */}
-      <div className="px-6 pb-6">
-        <InfoRow label="Birthday" value={formattedBirthday} icon="📅" />
-        <InfoRow label="Gender" value={capitalizeFirst(puppy.gender)} icon="🐾" />
-        <InfoRow
-          label="Vaccination"
-          icon="💉"
-          value={
-            <Badge
-              label={vaccinationLabel}
-              variant={vaccinationVariantMap[puppy.vaccinationStatus]}
-              size="sm"
+        {/* Cream content zone — scrolls internally when content exceeds the available space */}
+        <div className="flex flex-col gap-3 bg-cream p-4 max-h-[60vh] overflow-y-auto">
+          {/* White inner card: breed */}
+          <div className="bg-white rounded-card border border-hairline px-4">
+            <InfoRow
+              label="Breed"
+              value={puppy.breed}
+              icon={<PawPrint size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
             />
-          }
-        />
-        {puppy.microchipId && <InfoRow label="Microchip" value={puppy.microchipId} icon="📡" />}
-        <InfoRow label="Family ID" value={puppy.familyId} icon="🏠" />
-      </div>
-    </article>
-  )
-})
+          </div>
+
+          {/* Single copper-accented key metric: program progress */}
+          <StatChip
+            label="Program progress"
+            value={programWeek}
+            icon={<GraduationCap size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
+          />
+
+          {/* White inner card: birth date */}
+          <div className="bg-white rounded-card border border-hairline px-4">
+            <InfoRow
+              label="Birth date"
+              value={formattedBirthDate}
+              icon={<Calendar size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
+            />
+          </div>
+
+          {/* White inner card: weekly focus (calm empty state when null) */}
+          <div className="bg-white rounded-card border border-hairline p-4">
+            <div className="flex items-center gap-2">
+              <span aria-hidden="true" className="flex items-center text-slate">
+                <Target size={ICON_SIZE} strokeWidth={ICON_STROKE} />
+              </span>
+              <Typography variant="label" color="secondary">
+                Weekly focus
+              </Typography>
+            </div>
+            <Typography
+              variant="body"
+              color={hasWeeklyFocus ? 'primary' : 'secondary'}
+              className="mt-2"
+            >
+              {puppy.weeklyFocus ?? WEEKLY_FOCUS_EMPTY}
+            </Typography>
+          </div>
+
+          {/* Family greeting */}
+          {familyName && (
+            <Typography variant="bodySmall" color="secondary" className="pt-1 text-center">
+              Welcome, the {familyName} family
+            </Typography>
+          )}
+        </div>
+      </article>
+    )
+  }
+)
 
 PuppyProfileCard.displayName = 'PuppyProfileCard'

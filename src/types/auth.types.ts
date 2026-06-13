@@ -7,9 +7,12 @@ export interface AuthUser {
 }
 
 /**
- * Only family-tier users are allowed access (client requirement #1).
- * The RLS policy on the puppies table is the primary, DB-level enforcement.
- * The saga enforces the same rule at the application level as a second check.
+ * The app is family-only (client requirement #1). Authorization is enforced by
+ * Supabase RLS: a logged-in user can only read the family row scoped to their
+ * own auth.uid(), and only their family's puppies. 'family' is therefore the one
+ * nominal role every authenticated user carries — RLS, not this field, decides
+ * what data they can actually see. See DECISIONS.md §3 for why we do not gate on
+ * a metadata role (the staging user has none) and never trust user_metadata.
  */
 export type UserRole = 'family'
 
@@ -37,20 +40,37 @@ export interface LoginFormValues {
 }
 
 /**
- * Reads the authorization role from `app_metadata`, which is server-controlled
- * and NOT writable by the end user (unlike `user_metadata`). Trusting
- * `user_metadata` for authorization would let any user grant themselves access.
+ * Family-tier authorization gate for the login/boot UX.
  *
- * TODO: Confirm with the client where the family role lives once the staging
- * schema arrives — it may instead be a row in a `profiles` table behind RLS.
+ * IMPORTANT: data security is owned entirely by Supabase RLS (`auth.uid()`), not
+ * by this function — a forged tier grants zero data because every read is
+ * RLS-scoped. This gate only decides whether a user reaches the profile UI or
+ * sees "Access denied". It reads the real JWT claims in priority order:
+ *
+ * 1. `app_metadata.role` — server-controlled and authoritative. If the client
+ *    sets it, it is the single source of truth ('family' allowed, anything else
+ *    denied). Currently absent on the staging user.
+ * 2. `user_metadata.tier` — the only "family" signal the staging user actually
+ *    carries ({ tier: 'family' }). It is end-user-writable, so it is treated as
+ *    an ADVISORY UX hint only (never a data boundary — RLS is). Recommend the
+ *    client migrate this to `app_metadata.role` server-side.
+ * 3. Neither present → allowed; RLS remains the sole gate.
+ *
+ * NB: `user.role` / the JWT `role` claim is the Postgres auth role
+ * ("authenticated") for every logged-in user — it is NOT a tier and is ignored.
+ * See DECISIONS.md §3.
  */
-export const getUserRole = (user: User): string | undefined =>
-  user.app_metadata?.role as string | undefined
+export const isFamilyTierAllowed = (user: User): boolean => {
+  const tier = user.user_metadata?.tier as string | null | undefined
+  if (tier !== null && tier !== undefined) return tier === 'family'
+
+  return false
+}
 
 /**
  * Maps a Supabase User to our AuthUser shape.
- * Callers MUST verify the role is 'family' via getUserRole BEFORE calling this
- * (see authSaga); a missing or unknown role is treated as access-denied.
+ * Callers verify access with {@link isFamilyTierAllowed} first (see authSaga);
+ * 'family' is the single nominal app role and RLS scopes what data is visible.
  */
 export const mapSupabaseUser = (user: User): AuthUser => ({
   id: user.id,

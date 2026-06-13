@@ -33,14 +33,16 @@ export interface TypographyProps {
 }
 
 const variantClasses: Record<TypographyVariant, string> = {
-  h1: 'text-3xl font-semibold leading-tight',
-  h2: 'text-2xl font-semibold leading-tight',
-  h3: 'text-xl font-medium leading-snug',
-  h4: 'text-lg font-medium leading-snug',
-  body: 'text-base font-normal leading-relaxed',
-  bodySmall: 'text-sm font-normal leading-relaxed',
-  label: 'text-sm font-medium leading-none',
-  caption: 'text-xs font-normal leading-none',
+  // Display headers (incl. the puppy name) — Cormorant Garamond
+  h1: 'font-display text-4xl font-bold leading-tight',
+  h2: 'font-display text-3xl font-semibold leading-tight',
+  h3: 'font-display text-2xl font-semibold leading-snug',
+  // UI / body / labels — Jost
+  h4: 'font-sans text-lg font-semibold leading-snug',
+  body: 'font-sans text-base font-normal leading-relaxed',
+  bodySmall: 'font-sans text-sm font-normal leading-relaxed',
+  label: 'font-sans text-sm font-medium leading-none',
+  caption: 'font-sans text-xs font-normal leading-none',
 }
 
 const defaultElements: Record<TypographyVariant, ElementType> = {
@@ -55,20 +57,20 @@ const defaultElements: Record<TypographyVariant, ElementType> = {
 }
 
 const colorClasses: Record<TypographyColor, string> = {
-  primary: 'text-neutral-900',
-  secondary: 'text-neutral-600',
-  muted: 'text-neutral-400',
-  inverse: 'text-white',
-  success: 'text-green-700',
-  warning: 'text-yellow-700',
-  error: 'text-red-700',
+  primary: 'text-ink',
+  secondary: 'text-slate',
+  muted: 'text-tan-dark',
+  inverse: 'text-cream',
+  success: 'text-success',
+  warning: 'text-warning',
+  error: 'text-error',
 }
 
 /**
  * Atom: Typography
  * All text in the app uses this component.
- * Ensures consistent font sizing, weight, and color across the UI.
- * TODO: Update variant classes when client provides typography tokens.
+ * Ensures consistent font sizing, weight, and color across the UI:
+ * Cormorant Garamond for display headers, Jost for body/UI/labels.
  */
 export const Typography = memo<TypographyProps>(
   ({ children, variant = 'body', color = 'primary', as, className = '' }) => {

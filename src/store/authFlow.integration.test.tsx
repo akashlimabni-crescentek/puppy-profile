@@ -1,4 +1,5 @@
 /* eslint-disable camelcase -- this file mocks the external Supabase API shape (snake_case) */
+import { StrictMode } from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
@@ -31,22 +32,32 @@ const { makeStore } = await import('@store/store')
 const { loginRequest } = await import('@store/authSlice')
 const { default: ProfilePage } = await import('@pages/ProfilePage')
 
-/** The raw snake_case row Supabase would return, derived from the camelCase fixture. */
+/** The raw snake_case puppy row Supabase would return, derived from the fixture. */
 const puppyRow = {
   id: mockPuppy.id,
   name: mockPuppy.name,
   breed: mockPuppy.breed,
-  age_months: mockPuppy.ageMonths,
-  weight_kg: mockPuppy.weightKg,
+  birth_date: mockPuppy.birthDate,
+  sire: mockPuppy.sire,
+  dam: mockPuppy.dam,
+  program_type: mockPuppy.programType,
+  program_length_weeks: mockPuppy.programLengthWeeks,
+  current_week: mockPuppy.currentWeek,
+  weekly_focus: mockPuppy.weeklyFocus,
   photo_url: mockPuppy.photoUrl,
+  status: mockPuppy.status,
   family_id: mockPuppy.familyId,
-  gender: mockPuppy.gender,
-  color: mockPuppy.color,
-  vaccination_status: mockPuppy.vaccinationStatus,
-  microchip_id: mockPuppy.microchipId,
-  birthday: mockPuppy.birthday,
   created_at: mockPuppy.createdAt,
-  updated_at: mockPuppy.updatedAt,
+}
+
+/** The combined embed Supabase returns: the family row with its puppies nested. */
+const familyRow = {
+  id: mockPuppy.familyId,
+  auth_user_id: 'u1',
+  family_name: 'Testerson',
+  email: 'fam@test.com',
+  created_at: mockPuppy.createdAt,
+  puppies: [puppyRow],
 }
 
 describe('auth → fetch → render integration', () => {
@@ -56,18 +67,64 @@ describe('auth → fetch → render integration', () => {
     onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
   })
 
-  it('logs in a family user, fetches once, and renders the card', async () => {
+  it('logs in without an app_metadata role, fetches once, and renders the card', async () => {
+    // Mirrors the real staging user: no app_metadata.role, only a (untrusted)
+    // user_metadata.tier. Login must still succeed — RLS is the gate.
     signInWithPassword.mockResolvedValue({
       data: {
-        user: { id: 'u1', email: 'fam@test.com', app_metadata: { role: 'family' } },
+        user: {
+          id: 'u1',
+          email: 'fam@test.com',
+          app_metadata: { provider: 'email' },
+          user_metadata: { tier: 'family' },
+        },
         session: { access_token: 'token' },
       },
       error: null,
     })
-    maybeSingle.mockResolvedValue({ data: puppyRow, error: null })
+    maybeSingle.mockResolvedValue({ data: familyRow, error: null })
 
     const store = makeStore()
     store.dispatch(loginRequest({ email: 'fam@test.com', password: 'secret' }))
+
+    await waitFor(() => expect(store.getState().auth.isAuthenticated).toBe(true))
+
+    // StrictMode double-invokes the mount effect; the fetch must still fire once.
+    render(
+      <StrictMode>
+        <Provider store={store}>
+          <MemoryRouter>
+            <ProfilePage />
+          </MemoryRouter>
+        </Provider>
+      </StrictMode>
+    )
+
+    expect(await screen.findByText(mockPuppy.name)).toBeInTheDocument()
+    expect(await screen.findByText('Welcome, the Testerson family')).toBeInTheDocument()
+    expect(signInWithPassword).toHaveBeenCalledTimes(1)
+    expect(maybeSingle).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps an authenticated family user with no visible family row on the no-record state', async () => {
+    // The user passes the family-tier gate, but their RLS query returns no family
+    // row — they stay signed in and see the friendly "no record" state.
+    signInWithPassword.mockResolvedValue({
+      data: {
+        user: {
+          id: 'u2',
+          email: 'other@test.com',
+          app_metadata: { provider: 'email' },
+          user_metadata: { tier: 'family' },
+        },
+        session: { access_token: 'token' },
+      },
+      error: null,
+    })
+    maybeSingle.mockResolvedValue({ data: null, error: null })
+
+    const store = makeStore()
+    store.dispatch(loginRequest({ email: 'other@test.com', password: 'secret' }))
 
     await waitFor(() => expect(store.getState().auth.isAuthenticated).toBe(true))
 
@@ -79,22 +136,50 @@ describe('auth → fetch → render integration', () => {
       </Provider>
     )
 
-    expect(await screen.findByText(mockPuppy.name)).toBeInTheDocument()
-    expect(signInWithPassword).toHaveBeenCalledTimes(1)
-    expect(maybeSingle).toHaveBeenCalledTimes(1)
+    expect(await screen.findByText(/no family record found/i)).toBeInTheDocument()
+    expect(store.getState().auth.isAuthenticated).toBe(true)
   })
 
-  it('denies a non-family user and never stores a session', async () => {
+  it('rejects a user whose trusted app_metadata.role is not family', async () => {
+    // Future-proof gate: once the client sets app_metadata.role, a non-family
+    // value is rejected at login (signed out, never authenticated).
     signInWithPassword.mockResolvedValue({
       data: {
-        user: { id: 'u2', email: 'other@test.com', app_metadata: { role: 'staff' } },
+        user: {
+          id: 'u3',
+          email: 'staff@test.com',
+          app_metadata: { provider: 'email', role: 'staff' },
+        },
         session: { access_token: 'token' },
       },
       error: null,
     })
 
     const store = makeStore()
-    store.dispatch(loginRequest({ email: 'other@test.com', password: 'secret' }))
+    store.dispatch(loginRequest({ email: 'staff@test.com', password: 'secret' }))
+
+    await waitFor(() => expect(store.getState().auth.error).not.toBeNull())
+    expect(store.getState().auth.isAuthenticated).toBe(false)
+    expect(signOut).toHaveBeenCalledTimes(1)
+  })
+
+  it('rejects a user whose user_metadata.tier is not family (advisory UX gate)', async () => {
+    // No authoritative app_metadata.role, and the advisory tier says non-family.
+    signInWithPassword.mockResolvedValue({
+      data: {
+        user: {
+          id: 'u4',
+          email: 'staff2@test.com',
+          app_metadata: { provider: 'email' },
+          user_metadata: { tier: 'staff' },
+        },
+        session: { access_token: 'token' },
+      },
+      error: null,
+    })
+
+    const store = makeStore()
+    store.dispatch(loginRequest({ email: 'staff2@test.com', password: 'secret' }))
 
     await waitFor(() => expect(store.getState().auth.error).not.toBeNull())
     expect(store.getState().auth.isAuthenticated).toBe(false)

@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { GraduationCap } from 'lucide-react'
 import { StatChip } from './StatChip'
 
 const meta: Meta<typeof StatChip> = {
@@ -10,7 +11,22 @@ const meta: Meta<typeof StatChip> = {
 export default meta
 type Story = StoryObj<typeof StatChip>
 
-export const Age: Story = { args: { label: 'Age', value: '1 yr 2 mo', icon: '🎂' } }
-export const Weight: Story = { args: { label: 'Weight', value: '22.5 kg', icon: '⚖️' } }
-export const Color: Story = { args: { label: 'Color', value: 'Golden', icon: '🎨' } }
-export const NoIcon: Story = { args: { label: 'ID', value: 'A001' } }
+export const ProgramProgress: Story = {
+  args: {
+    label: 'Program progress',
+    value: 'Week 2 of 4',
+    icon: <GraduationCap size={16} strokeWidth={1.75} />,
+  },
+}
+
+export const FinalWeek: Story = {
+  args: {
+    label: 'Program progress',
+    value: 'Week 4 of 4',
+    icon: <GraduationCap size={16} strokeWidth={1.75} />,
+  },
+}
+
+export const NoIcon: Story = {
+  args: { label: 'Program progress', value: 'Week 1 of 4' },
+}

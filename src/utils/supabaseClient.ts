@@ -5,11 +5,9 @@ import { env } from '@utils/validateEnv'
  * Supabase client singleton.
  * Initialized once — imported everywhere, never re-created.
  *
- * RLS policy on the puppies table ensures a family user can ONLY read
- * their own family's record. This is enforced at the Postgres level,
- * not just application level.
- *
- * TODO: When client provides staging credentials, add them to .env
+ * RLS policies on the families and puppies tables ensure a logged-in user can
+ * ONLY read their own family row (auth_user_id = auth.uid()) and that family's
+ * puppies. This is enforced at the Postgres level, not just the app level.
  */
 export const supabase = createClient(env.supabaseUrl, env.supabaseAnonKey, {
   auth: {

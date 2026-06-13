@@ -17,12 +17,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:bg-primary-300',
-  secondary:
-    'bg-white text-primary-700 border border-primary-300 hover:bg-primary-50 focus:ring-primary-500',
-  ghost: 'bg-transparent text-neutral-600 hover:bg-neutral-100 focus:ring-neutral-400',
-  danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300',
+  // Primary CTA — the one place copper signals the main action.
+  primary: 'bg-copper text-cream hover:bg-copper-dark focus:ring-copper disabled:bg-copper-light',
+  secondary: 'bg-white text-ink border border-hairline hover:bg-tan-light focus:ring-copper',
+  // Ghost (e.g. Sign out) — deliberately not copper.
+  ghost: 'bg-transparent text-slate hover:bg-tan-light focus:ring-copper',
+  danger: 'bg-error text-cream hover:opacity-90 focus:ring-error disabled:opacity-70',
 }
 
 const sizeClasses: Record<ButtonSize, string> = {

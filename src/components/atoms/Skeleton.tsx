@@ -22,7 +22,7 @@ export const Skeleton = memo<SkeletonProps>(
     <div
       aria-hidden="true"
       className={`
-      animate-pulse bg-neutral-200
+      animate-pulse bg-tan-dark
       ${circle ? 'rounded-full' : 'rounded-md'}
       ${width} ${height} ${className}
     `}

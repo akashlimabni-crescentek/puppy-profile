@@ -1,38 +1,47 @@
 /** @type {import('tailwindcss').Config} */
 
 /**
- * DESIGN TOKENS
- * TODO: Replace ALL values in this object with client-provided design spec.
- * This is the single source of truth — change here, entire UI updates.
+ * DESIGN TOKENS — Stokeshire vendor design spec
+ * Single source of truth for the visual system. CSS custom properties in
+ * `src/styles/index.css` mirror these values (the `--stokeshire-*` variables).
+ * To re-skin the UI, change values here and in index.css only — never in a
+ * component (see CRESCENTEK-CODE-QUALITY-STANDARD §13).
+ *
+ * Copper (#9C723A) is a restrained hero accent: active states, the single key
+ * metric (week progress), and the one primary CTA only — never a fill or body
+ * text.
  */
 const tokens = {
   colors: {
-    primary: {
-      50: '#fdf4ff', 100: '#fae8ff', 200: '#f5d0fe', 300: '#f0abfc',
-      400: '#e879f9', 500: '#d946ef', 600: '#c026d3', 700: '#a21caf',
-      800: '#86198f', 900: '#701a75',
-    },
-    accent: {
-      50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74',
-      400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c',
-      800: '#9a3412', 900: '#7c2d12',
-    },
-    neutral: {
-      50: '#fafafa', 100: '#f4f4f5', 200: '#e4e4e7', 300: '#d4d4d8',
-      400: '#a1a1aa', 500: '#71717a', 600: '#52525b', 700: '#3f3f46',
-      800: '#27272a', 900: '#18181b',
-    },
-    success: '#22c55e',
-    warning: '#f59e0b',
-    error: '#ef4444',
+    // Primary
+    tan: '#E4DFD8',
+    blue: '#9CA5B0',
+    copper: '#9C723A', // HERO ACCENT — use sparingly
+    ink: '#1C1C1C',
+
+    // UI neutral
+    slate: 'rgba(82, 82, 82, 0.7)',
+
+    // Supporting
+    'tan-light': '#F2EFEA',
+    'tan-dark': '#CFC7BC',
+    'copper-light': '#C29A5A',
+    'copper-dark': '#6E4F27', // accessible copper for body text on light grounds
+    cream: '#FAF7F2',
+    parchment: '#F5EFE4',
+
+    // Functional UI states (form validation, etc. — outside the brand card)
+    success: '#3F7A4F',
+    warning: '#9C723A',
+    error: '#9B3B33',
   },
   fontFamily: {
-    // TODO: Replace with client font
-    sans: ['Inter', 'system-ui', 'sans-serif'],
-    display: ['Inter', 'system-ui', 'sans-serif'],
+    // Display / headers / puppy name
+    display: ['Cormorant Garamond'],
+    // Body / UI / labels / data
+    sans: ['Jost'],
   },
   fontSize: {
-    // TODO: Replace with client typography scale
     xs: ['0.75rem', { lineHeight: '1rem' }],
     sm: ['0.875rem', { lineHeight: '1.25rem' }],
     base: ['1rem', { lineHeight: '1.5rem' }],
@@ -40,19 +49,24 @@ const tokens = {
     xl: ['1.25rem', { lineHeight: '1.75rem' }],
     '2xl': ['1.5rem', { lineHeight: '2rem' }],
     '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
+    '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
   },
   borderRadius: {
-    none: '0', sm: '0.125rem', DEFAULT: '0.25rem', md: '0.375rem',
-    lg: '0.5rem', xl: '0.75rem', '2xl': '1rem', '3xl': '1.5rem', full: '9999px',
+    none: '0',
+    sm: '0.125rem',
+    DEFAULT: '0.25rem',
+    md: '0.375rem',
+    lg: '0.5rem',
+    xl: '0.75rem',
+    card: '16px', // Stokeshire card radius (spec range 14–18px)
+    '2xl': '1rem',
+    '3xl': '1.5rem',
+    full: '9999px',
   },
 }
 
 export default {
-  content: [
-    './index.html',
-    './src/**/*.{ts,tsx}',
-    './.storybook/**/*.{ts,tsx}',
-  ],
+  content: ['./index.html', './src/**/*.{ts,tsx}', './.storybook/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: tokens.colors,
@@ -60,8 +74,12 @@ export default {
       fontSize: tokens.fontSize,
       borderRadius: tokens.borderRadius,
       boxShadow: {
-        card: '0 4px 24px rgba(0,0,0,0.08)',
-        'card-hover': '0 8px 32px rgba(0,0,0,0.12)',
+        // Barely perceptible — the spec calls for none or near-none.
+        card: '0 1px 2px rgba(28, 28, 28, 0.04)',
+        'card-hover': '0 2px 6px rgba(28, 28, 28, 0.06)',
+      },
+      borderColor: {
+        hairline: 'rgba(28, 28, 28, 0.07)', // Stokeshire card border
       },
     },
   },

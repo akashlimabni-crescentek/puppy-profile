@@ -3,7 +3,7 @@ import { eventChannel, type EventChannel } from 'redux-saga'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { AuthChangeEvent, Session } from '@supabase/supabase-js'
 import { supabase } from '@utils/supabaseClient'
-import { mapSupabaseUser, getUserRole, type LoginCredentials } from '@app-types/auth.types'
+import { mapSupabaseUser, isFamilyTierAllowed, type LoginCredentials } from '@app-types/auth.types'
 import {
   initializeAuth,
   authInitialized,
@@ -17,16 +17,14 @@ import {
 import { resetPuppy } from '@store/puppySlice'
 
 /**
- * Single source of truth for the "is this user allowed in?" decision.
- * Family-tier only (requirement #1): an explicit 'family' role is required.
- * A missing or unknown role is access-denied — we never default-grant.
- */
-const isFamilyUser = (user: Session['user']): boolean => getUserRole(user) === 'family'
-
-/**
  * Handles login side effects.
  * takeLatest: if login is triggered multiple times, only the last call runs.
- * Enforces the family-tier role at the application level after Supabase auth.
+ *
+ * Authorization is enforced primarily by RLS. As defence in depth we also apply
+ * the family-tier UX gate (isFamilyTierAllowed): it checks `app_metadata.role`
+ * (authoritative when present), else `user_metadata.tier` (advisory — the staging
+ * user carries `tier: 'family'`), else admits and lets RLS scope the data. A
+ * forged tier grants no data because every read is RLS-scoped. See DECISIONS.md §3.
  */
 function* handleLogin(action: PayloadAction<LoginCredentials>) {
   try {
@@ -45,8 +43,8 @@ function* handleLogin(action: PayloadAction<LoginCredentials>) {
       return
     }
 
-    // Application-level role enforcement (RLS is the primary DB-level enforcement).
-    if (!isFamilyUser(data.user)) {
+    // Family-tier gate (active only when a trusted app_metadata.role exists).
+    if (!isFamilyTierAllowed(data.user)) {
       yield call([supabase.auth, supabase.auth.signOut])
       yield put(loginFailure('Access denied. This app is for family accounts only.'))
       return
@@ -83,10 +81,11 @@ function* handleInitializeAuth() {
     } = yield call([supabase.auth, supabase.auth.getSession])
 
     if (session?.user) {
-      if (isFamilyUser(session.user)) {
+      if (isFamilyTierAllowed(session.user)) {
+        // Restore the session; RLS remains the authority on what data is visible.
         yield put(setSession({ user: mapSupabaseUser(session.user) }))
       } else {
-        // A persisted session that no longer satisfies the family rule → sign out.
+        // A persisted session whose trusted role is no longer 'family' → sign out.
         yield call([supabase.auth, supabase.auth.signOut])
       }
     }

@@ -3,50 +3,42 @@ import { Skeleton } from '@atoms/Skeleton'
 
 /**
  * Molecule: PuppyCardSkeleton
- * Animated loading state that mirrors the PuppyProfileCard layout exactly.
- * Shown while puppy data is fetching — pixel-matched to the real card.
- * Never use a spinner for this state — skeleton screens have better perceived performance.
+ * Animated loading state mirroring the PuppyProfileCard layout: a dark header
+ * zone (avatar + name + status) over a cream content zone that leads with breed,
+ * then the metric and two white inner blocks. Never a spinner.
  */
 export const PuppyCardSkeleton = memo(() => (
   <div
-    className="bg-white rounded-3xl shadow-card overflow-hidden w-full max-w-sm mx-auto"
+    className="bg-cream rounded-card border border-hairline shadow-card overflow-hidden w-full max-w-sm mx-auto"
     aria-busy="true"
     aria-label="Loading puppy profile"
     role="status"
   >
-    {/* Header banner — matches card gradient header */}
-    <div className="bg-gradient-to-br from-primary-100 to-accent-100 h-24" />
+    {/* Dark header zone — avatar + name + status */}
+    <div className="flex flex-col items-center bg-ink px-6 pt-8 pb-7">
+      <Skeleton circle width="w-28" height="h-28" />
+      <Skeleton width="w-32" height="h-7" className="mt-4" />
+      <Skeleton width="w-24" height="h-4" className="mt-2" />
+    </div>
 
-    {/* Avatar + badges row */}
-    <div className="px-6 -mt-12 flex justify-between items-end">
-      <Skeleton circle width="w-24" height="h-24" />
-      <div className="flex gap-2 pb-2">
-        <Skeleton width="w-16" height="h-6" />
-        <Skeleton width="w-16" height="h-6" />
+    {/* Cream content zone — breed + metric + two white inner blocks */}
+    <div className="flex flex-col gap-3 bg-cream p-4">
+      <div className="bg-white rounded-card border border-hairline p-4 flex justify-between">
+        <Skeleton width="w-16" height="h-4" />
+        <Skeleton width="w-32" height="h-4" />
       </div>
-    </div>
-
-    {/* Name + breed */}
-    <div className="px-6 pt-4 pb-2">
-      <Skeleton width="w-40" height="h-7" className="mb-2" />
-      <Skeleton width="w-28" height="h-5" />
-    </div>
-
-    {/* Stat chips row */}
-    <div className="px-6 py-4 flex gap-3">
-      <Skeleton width="w-20" height="h-16" className="rounded-2xl" />
-      <Skeleton width="w-20" height="h-16" className="rounded-2xl" />
-      <Skeleton width="w-20" height="h-16" className="rounded-2xl" />
-    </div>
-
-    {/* Info rows */}
-    <div className="px-6 pb-6 flex flex-col gap-3">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="flex justify-between items-center py-1">
-          <Skeleton width="w-24" height="h-4" />
-          <Skeleton width="w-32" height="h-4" />
-        </div>
-      ))}
+      <div className="bg-white rounded-card border border-hairline p-4">
+        <Skeleton width="w-24" height="h-3" className="mb-2" />
+        <Skeleton width="w-28" height="h-5" />
+      </div>
+      <div className="bg-white rounded-card border border-hairline p-4 flex justify-between">
+        <Skeleton width="w-24" height="h-4" />
+        <Skeleton width="w-28" height="h-4" />
+      </div>
+      <div className="bg-white rounded-card border border-hairline p-4">
+        <Skeleton width="w-28" height="h-4" className="mb-2" />
+        <Skeleton width="w-full" height="h-4" />
+      </div>
     </div>
   </div>
 ))

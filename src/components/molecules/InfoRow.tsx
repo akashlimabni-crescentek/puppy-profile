@@ -4,31 +4,31 @@ import { Typography } from '@atoms/Typography'
 export interface InfoRowProps {
   /** Row label text */
   label: string
-  /** Row value — string or ReactNode (e.g. a Badge component) */
+  /** Row value — string or ReactNode (e.g. a nested element) */
   value: ReactNode
-  /** Optional leading icon (emoji) */
-  icon?: string
+  /** Optional leading icon node (e.g. a Lucide icon) */
+  icon?: ReactNode
   /** Additional Tailwind classes */
   className?: string
 }
 
 /**
  * Molecule: InfoRow
- * A label–value pair row for the profile card details section.
- * Accepts ReactNode as value so a Badge can be passed directly.
+ * A label–value pair row for the profile card content zone.
+ * Accepts ReactNode for both the value and the leading icon.
  * Bottom border on all rows except the last via Tailwind's last: variant.
  */
 export const InfoRow = memo<InfoRowProps>(({ label, value, icon, className = '' }) => (
   <div
     className={`
-      flex items-center justify-between py-3
-      border-b border-neutral-100 last:border-0
+      flex items-center justify-between py-4
+      border-b border-hairline last:border-0
       ${className}
     `}
   >
     <div className="flex items-center gap-2">
       {icon && (
-        <span aria-hidden="true" className="text-base">
+        <span aria-hidden="true" className="flex items-center text-slate">
           {icon}
         </span>
       )}

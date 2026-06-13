@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { ProtectedRoute } from './ProtectedRoute'
 import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
 import { useAppDispatch } from '@store/hooks'
@@ -14,7 +14,7 @@ const ProfilePage = lazy(() => import('@pages/ProfilePage'))
 
 /** Shared full-screen fallback used while a lazy page chunk loads. */
 const pageFallback = (
-  <main className="min-h-screen bg-gradient-to-br from-primary-50 to-accent-50 flex items-center justify-center p-4">
+  <main className="min-h-screen bg-parchment flex items-center justify-center p-4">
     <PuppyCardSkeleton />
   </main>
 )
@@ -49,9 +49,14 @@ const router = createBrowserRouter([
 
 export const AppRouter = () => {
   const dispatch = useAppDispatch()
+  const hasInitializedRef = useRef(false)
 
   // Restore any persisted Supabase session into Redux exactly once on boot.
+  // The ref guard keeps this to a single dispatch under React StrictMode, which
+  // would otherwise run this mount effect twice and call getSession twice.
   useEffect(() => {
+    if (hasInitializedRef.current) return
+    hasInitializedRef.current = true
     dispatch(initializeAuth())
   }, [dispatch])
 

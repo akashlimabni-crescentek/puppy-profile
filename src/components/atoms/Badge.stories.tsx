@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { Check } from 'lucide-react'
 import { Badge } from './Badge'
 
 const meta: Meta<typeof Badge> = {
@@ -18,23 +19,23 @@ export default meta
 type Story = StoryObj<typeof Badge>
 
 export const Default: Story = {
-  args: { label: 'Golden Retriever', variant: 'neutral' },
+  args: { label: 'F1 Australian Mountain Dog', variant: 'neutral' },
 }
 
 export const Success: Story = {
-  args: { label: 'Up to date', variant: 'success', icon: '✓' },
+  args: { label: 'In school', variant: 'success', icon: <Check size={12} strokeWidth={2} /> },
 }
 
 export const Warning: Story = {
-  args: { label: 'Due soon', variant: 'warning', icon: '⚠' },
+  args: { label: 'Starting soon', variant: 'warning' },
 }
 
 export const Error: Story = {
-  args: { label: 'Overdue', variant: 'error', icon: '✗' },
+  args: { label: 'On hold', variant: 'error' },
 }
 
 export const Info: Story = {
-  args: { label: 'Male', variant: 'info', icon: '♂' },
+  args: { label: 'Doodle School', variant: 'info' },
 }
 
 export const MediumSize: Story = {

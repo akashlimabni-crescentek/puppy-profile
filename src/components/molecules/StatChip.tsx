@@ -1,41 +1,44 @@
-import { memo } from 'react'
+import { memo, type ReactNode } from 'react'
 import { Typography } from '@atoms/Typography'
 
 export interface StatChipProps {
-  /** Stat label shown below the value */
+  /** Label describing the metric */
   label: string
-  /** Stat value shown prominently */
+  /** The metric value — rendered in copper as the card's single key metric */
   value: string
-  /** Optional icon shown above the value */
-  icon?: string
+  /** Optional leading icon node (e.g. a Lucide icon) */
+  icon?: ReactNode
   /** Additional Tailwind classes */
   className?: string
 }
 
 /**
  * Molecule: StatChip
- * Compact stat block for key metrics (age, weight, color).
- * Used in a row in the card header area.
+ * The card's single copper-accented key metric (program week progress).
+ * Layout mirrors InfoRow (label left, value right) so the week string aligns
+ * with breed and birth date values. The value uses Jost bold in copper.
  */
 export const StatChip = memo<StatChipProps>(({ label, value, icon, className = '' }) => (
   <div
     className={`
-      flex flex-col items-center justify-center
-      bg-neutral-50 rounded-2xl px-4 py-3 min-w-[80px]
+      flex items-center justify-between gap-3
+      bg-white rounded-card border border-hairline p-4
       ${className}
     `}
   >
-    {icon && (
-      <span aria-hidden="true" className="text-xl mb-1">
-        {icon}
-      </span>
-    )}
-    <Typography variant="h4" color="primary" className="leading-none">
+    <div className="flex items-center gap-2 min-w-0">
+      {icon && (
+        <span aria-hidden="true" className="flex shrink-0 items-center text-copper">
+          {icon}
+        </span>
+      )}
+      <Typography variant="label" color="secondary">
+        {label}
+      </Typography>
+    </div>
+    <span className="font-sans text-lg font-bold leading-none lining-nums tabular-nums text-copper-dark text-right shrink-0">
       {value}
-    </Typography>
-    <Typography variant="caption" color="muted" className="mt-1 text-center">
-      {label}
-    </Typography>
+    </span>
   </div>
 ))
 
