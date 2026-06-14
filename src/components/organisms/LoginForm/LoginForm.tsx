@@ -69,7 +69,6 @@ export const LoginForm = memo<LoginFormProps>(({ onSubmit, isLoading = false, er
         autoComplete="email"
         placeholder="you@example.com"
         required
-        value={'testfamily@stokeshire-staging.test'}
         errorMessage={errors.email?.message}
         {...register('email')}
       />
@@ -80,7 +79,6 @@ export const LoginForm = memo<LoginFormProps>(({ onSubmit, isLoading = false, er
         autoComplete="current-password"
         placeholder="••••••••"
         required
-        value={'Stk-Test-2026!'}
         errorMessage={errors.password?.message}
         {...register('password')}
       />
