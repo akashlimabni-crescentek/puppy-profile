@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { InfoRow } from './InfoRow'
-import { Badge } from '@atoms/Badge/Badge'
 import { Icon } from '@atoms/Icon/Icon'
 
 const meta: Meta<typeof InfoRow> = {
@@ -31,7 +30,7 @@ export const NodeValue: Story = {
   args: {
     label: 'Status',
     icon: <Icon name="target" size={16} strokeWidth={1.75} />,
-    value: <Badge label="In school" variant="neutral" />,
+    value: <span className="font-medium text-copper">In school</span>,
   },
 }
 

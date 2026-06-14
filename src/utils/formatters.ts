@@ -4,21 +4,6 @@
  * Used in components and Storybook stories.
  */
 
-/**
- * Formats an ISO date-only string to a readable date. e.g. "2026-03-14" → "March 14, 2026".
- * Parses the date components in LOCAL time (not `new Date(isoDate)`, which treats
- * "YYYY-MM-DD" as UTC and can render the previous day in negative-offset zones).
- * Locale is 'en-US' to match the design spec's example output.
- */
-export const formatBirthday = (isoDate: string): string => {
-  const [year, month, day] = isoDate.slice(0, 10).split('-').map(Number)
-  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
-
 /** US (en-US) date/time presentation styles, all month-before-day ordering. */
 export type DateStyle = 'short' | 'long' | 'datetime' | 'time'
 
@@ -80,12 +65,6 @@ export const formatProgramWeek = (current: number | string, total: number | stri
   const week = Math.trunc(Number(current))
   const length = Math.trunc(Number(total))
   return `Week ${week} of ${length}`
-}
-
-/** Capitalizes first letter. e.g. "golden retriever" → "Golden retriever" */
-export const capitalizeFirst = (str: string): string => {
-  if (!str) return ''
-  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 /**

@@ -1,24 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-  formatBirthday,
-  formatProgramWeek,
-  capitalizeFirst,
-  formatStatus,
-  formatUsDate,
-} from './formatters'
-
-describe('formatBirthday', () => {
-  it('formats an ISO date to a readable string', () => {
-    const result = formatBirthday('2026-03-14')
-    expect(result).toContain('2026')
-    expect(result).toContain('March')
-    expect(result).toContain('14')
-  })
-
-  it('parses the date in local time so the day does not shift', () => {
-    expect(formatBirthday('2026-03-14')).toBe('March 14, 2026')
-  })
-})
+import { formatProgramWeek, formatStatus, formatUsDate } from './formatters'
 
 describe('formatUsDate', () => {
   it('formats a date-only string as US short by default', () => {
@@ -55,16 +36,6 @@ describe('formatProgramWeek', () => {
 
   it('coerces string week values from Supabase JSON', () => {
     expect(formatProgramWeek('2', '4')).toBe('Week 2 of 4')
-  })
-})
-
-describe('capitalizeFirst', () => {
-  it('capitalizes the first character', () => {
-    expect(capitalizeFirst('golden retriever')).toBe('Golden retriever')
-  })
-
-  it('returns empty string for empty input', () => {
-    expect(capitalizeFirst('')).toBe('')
   })
 })
 
