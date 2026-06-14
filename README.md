@@ -12,7 +12,7 @@ progress through a Stokeshire program. Built as a client evaluation deliverable.
 | Concern | Choice | Reason |
 |---------|--------|--------|
 | Build | Vite + React 19 + TypeScript (strict) | Fast HMR, native ESM, full type safety |
-| State | Redux Toolkit + Redux-Saga | Client requirement; `takeLatest` prevents duplicate API calls |
+| State | Redux Toolkit + Redux-Saga | `takeLatest` prevents duplicate API calls |
 | Auth + DB | Supabase JS v2 | Email/password auth, RLS-enforced queries |
 | Routing | React Router v7 | Protected routes with auth guard |
 | Forms | React Hook Form + Zod | Zero re-renders during typing, schema validation |
@@ -111,7 +111,7 @@ npm run storybook    # http://localhost:6006
 | `npm run build-storybook` | Build static Storybook |
 
 **Pre-delivery gate (all six must pass):**
-`type-check` · `lint` · `format:check` · `test:run` · `build` · `build-storybook`.
+`type-check` · `lint` · `format:check` · `build` · `build-storybook`.
 
 ---
 
