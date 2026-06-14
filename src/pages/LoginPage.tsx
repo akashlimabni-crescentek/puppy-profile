@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LoginForm } from '@organisms/LoginForm'
-import { Icon } from '@atoms/Icon'
-import { Typography } from '@atoms/Typography'
+import { LoginForm } from '@organisms/LoginForm/LoginForm'
+import { Icon } from '@atoms/Icon/Icon'
+import { Typography } from '@atoms/Typography/Typography'
 import { useAuth } from '@hooks/useAuth'
 import type { LoginFormValues } from '@app-types/auth.types'
 

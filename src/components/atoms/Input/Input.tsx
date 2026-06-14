@@ -1,5 +1,5 @@
 import { memo, forwardRef, type InputHTMLAttributes } from 'react'
-import { Icon } from '@atoms/Icon'
+import { Icon } from '@atoms/Icon/Icon'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   /** Visible label text */

@@ -1,5 +1,5 @@
 import { memo, useState } from 'react'
-import { Icon } from '@atoms/Icon'
+import { Icon } from '@atoms/Icon/Icon'
 
 export interface AvatarProps {
   /** Image source URL, or null when the family has not added a photo yet */

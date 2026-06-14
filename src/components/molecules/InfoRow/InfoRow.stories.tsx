@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { InfoRow } from './InfoRow'
-import { Badge } from '@atoms/Badge'
-import { Icon } from '@atoms/Icon'
+import { Badge } from '@atoms/Badge/Badge'
+import { Icon } from '@atoms/Icon/Icon'
 
 const meta: Meta<typeof InfoRow> = {
   title: 'Molecules/InfoRow',

@@ -1,5 +1,5 @@
 import { memo, type ReactNode } from 'react'
-import { Typography } from '@atoms/Typography'
+import { Typography } from '@atoms/Typography/Typography'
 
 export interface StatChipProps {
   /** Label describing the metric */

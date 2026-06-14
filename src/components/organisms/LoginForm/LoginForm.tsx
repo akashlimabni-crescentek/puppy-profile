@@ -2,9 +2,9 @@ import { memo, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Input } from '@atoms/Input'
-import { Button } from '@atoms/Button'
-import { Typography } from '@atoms/Typography'
+import { Input } from '@atoms/Input/Input'
+import { Button } from '@atoms/Button/Button'
+import { Typography } from '@atoms/Typography/Typography'
 import type { LoginFormValues } from '@app-types/auth.types'
 
 export interface LoginFormProps {
@@ -69,6 +69,7 @@ export const LoginForm = memo<LoginFormProps>(({ onSubmit, isLoading = false, er
         autoComplete="email"
         placeholder="you@example.com"
         required
+        value={'testfamily@stokeshire-staging.test'}
         errorMessage={errors.email?.message}
         {...register('email')}
       />
@@ -79,6 +80,7 @@ export const LoginForm = memo<LoginFormProps>(({ onSubmit, isLoading = false, er
         autoComplete="current-password"
         placeholder="••••••••"
         required
+        value={'Stk-Test-2026!'}
         errorMessage={errors.password?.message}
         {...register('password')}
       />

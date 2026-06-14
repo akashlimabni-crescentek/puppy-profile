@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Skeleton } from '@atoms/Skeleton'
+import { Skeleton } from '@atoms/Skeleton/Skeleton'
 
 /**
  * Molecule: PuppyCardSkeleton

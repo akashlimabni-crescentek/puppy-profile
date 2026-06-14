@@ -1,5 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react'
-import { Icon } from '@atoms/Icon'
+import { Icon } from '@atoms/Icon/Icon'
 
 interface Props {
   children: ReactNode

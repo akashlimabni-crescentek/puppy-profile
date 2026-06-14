@@ -1,7 +1,7 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { lazy, Suspense, useEffect, useRef } from 'react'
 import { ProtectedRoute } from './ProtectedRoute'
-import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
+import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton/PuppyCardSkeleton'
 import { useAppDispatch } from '@store/hooks'
 import { initializeAuth } from '@store/authSlice'
 

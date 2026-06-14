@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { StatChip } from './StatChip'
-import { Icon } from '@atoms/Icon'
+import { Icon } from '@atoms/Icon/Icon'
 
 const meta: Meta<typeof StatChip> = {
   title: 'Molecules/StatChip',

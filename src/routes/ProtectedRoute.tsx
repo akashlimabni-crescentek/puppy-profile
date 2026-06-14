@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '@hooks/useAuth'
-import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
+import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton/PuppyCardSkeleton'
 
 /**
  * ProtectedRoute
