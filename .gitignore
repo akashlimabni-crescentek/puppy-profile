@@ -1,7 +1,10 @@
 node_modules
 dist
 .env
-.env.local
+.env.dev
+.env.qa
+.env.stage
+.env.production
 coverage
 *.local
 .DS_Store
