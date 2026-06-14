@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react'
-import { Calendar, GraduationCap, PawPrint, Target } from 'lucide-react'
 import { Avatar } from '@atoms/Avatar'
+import { Icon } from '@atoms/Icon'
 import { Typography } from '@atoms/Typography'
 import { InfoRow } from '@molecules/InfoRow'
 import { StatChip } from '@molecules/StatChip'
@@ -73,7 +73,7 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
             <InfoRow
               label="Breed"
               value={puppy.breed}
-              icon={<PawPrint size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
+              icon={<Icon name="paw" size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
             />
           </div>
 
@@ -81,7 +81,7 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
           <StatChip
             label="Program progress"
             value={programWeek}
-            icon={<GraduationCap size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
+            icon={<Icon name="graduationCap" size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
           />
 
           {/* White inner card: birth date */}
@@ -89,7 +89,7 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
             <InfoRow
               label="Birth date"
               value={formattedBirthDate}
-              icon={<Calendar size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
+              icon={<Icon name="calendar" size={ICON_SIZE} strokeWidth={ICON_STROKE} />}
             />
           </div>
 
@@ -97,7 +97,7 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
           <div className="bg-white rounded-card border border-hairline p-4">
             <div className="flex items-center gap-2">
               <span aria-hidden="true" className="flex items-center text-slate">
-                <Target size={ICON_SIZE} strokeWidth={ICON_STROKE} />
+                <Icon name="target" size={ICON_SIZE} strokeWidth={ICON_STROKE} />
               </span>
               <Typography variant="label" color="secondary">
                 Weekly focus

@@ -1,7 +1,7 @@
-import { AlertCircle } from 'lucide-react'
 import { PuppyProfileCard } from '@organisms/PuppyProfileCard'
 import { PuppyCardSkeleton } from '@molecules/PuppyCardSkeleton'
 import { Button } from '@atoms/Button'
+import { Icon } from '@atoms/Icon'
 import { Typography } from '@atoms/Typography'
 import { CardErrorBoundary } from '@errors/CardErrorBoundary'
 import { useAuth } from '@hooks/useAuth'
@@ -34,8 +34,8 @@ const ProfilePage = () => {
         {/* Error state */}
         {isError && !isLoading && (
           <div className="max-w-sm mx-auto bg-white rounded-card border border-hairline shadow-card p-8 text-center">
-            <div className="flex justify-center mb-3 text-slate">
-              <AlertCircle size={32} strokeWidth={1.5} aria-hidden="true" />
+            <div className="flex justify-center mb-3">
+              <Icon name="alertCircle" tone="muted" size={32} strokeWidth={1.5} />
             </div>
             <Typography variant="h4" color="primary" className="mb-2">
               Could not load profile

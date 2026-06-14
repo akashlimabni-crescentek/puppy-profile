@@ -1,5 +1,5 @@
 import { memo, forwardRef, type InputHTMLAttributes } from 'react'
-import { AlertCircle } from 'lucide-react'
+import { Icon } from '@atoms/Icon'
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   /** Visible label text */
@@ -55,7 +55,7 @@ export const Input = memo(
               role="alert"
               className="text-xs text-error flex items-center gap-1"
             >
-              <AlertCircle size={13} strokeWidth={1.75} aria-hidden="true" />
+              <Icon name="alertCircle" size={13} strokeWidth={1.75} />
               {errorMessage}
             </span>
           )}

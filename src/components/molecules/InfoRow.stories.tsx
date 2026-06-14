@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Calendar, Target } from 'lucide-react'
 import { InfoRow } from './InfoRow'
 import { Badge } from '@atoms/Badge'
+import { Icon } from '@atoms/Icon'
 
 const meta: Meta<typeof InfoRow> = {
   title: 'Molecules/InfoRow',
@@ -23,14 +23,14 @@ export const StringValue: Story = {
   args: {
     label: 'Birth date',
     value: 'March 14, 2026',
-    icon: <Calendar size={16} strokeWidth={1.75} />,
+    icon: <Icon name="calendar" size={16} strokeWidth={1.75} />,
   },
 }
 
 export const NodeValue: Story = {
   args: {
     label: 'Status',
-    icon: <Target size={16} strokeWidth={1.75} />,
+    icon: <Icon name="target" size={16} strokeWidth={1.75} />,
     value: <Badge label="In school" variant="neutral" />,
   },
 }
@@ -43,6 +43,6 @@ export const LongValue: Story = {
   args: {
     label: 'Weekly focus',
     value: 'Novel surfaces and gentle handling; building calm recovery after startle.',
-    icon: <Target size={16} strokeWidth={1.75} />,
+    icon: <Icon name="target" size={16} strokeWidth={1.75} />,
   },
 }

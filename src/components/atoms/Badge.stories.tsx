@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { Check } from 'lucide-react'
 import { Badge } from './Badge'
+import { Icon } from './Icon'
 
 const meta: Meta<typeof Badge> = {
   title: 'Atoms/Badge',
@@ -23,7 +23,11 @@ export const Default: Story = {
 }
 
 export const Success: Story = {
-  args: { label: 'In school', variant: 'success', icon: <Check size={12} strokeWidth={2} /> },
+  args: {
+    label: 'In school',
+    variant: 'success',
+    icon: <Icon name="check" size={12} strokeWidth={2} />,
+  },
 }
 
 export const Warning: Story = {

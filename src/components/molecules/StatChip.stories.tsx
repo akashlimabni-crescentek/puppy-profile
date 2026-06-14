@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { GraduationCap } from 'lucide-react'
 import { StatChip } from './StatChip'
+import { Icon } from '@atoms/Icon'
 
 const meta: Meta<typeof StatChip> = {
   title: 'Molecules/StatChip',
@@ -15,7 +15,7 @@ export const ProgramProgress: Story = {
   args: {
     label: 'Program progress',
     value: 'Week 2 of 4',
-    icon: <GraduationCap size={16} strokeWidth={1.75} />,
+    icon: <Icon name="graduationCap" size={16} strokeWidth={1.75} />,
   },
 }
 
@@ -23,7 +23,7 @@ export const FinalWeek: Story = {
   args: {
     label: 'Program progress',
     value: 'Week 4 of 4',
-    icon: <GraduationCap size={16} strokeWidth={1.75} />,
+    icon: <Icon name="graduationCap" size={16} strokeWidth={1.75} />,
   },
 }
 

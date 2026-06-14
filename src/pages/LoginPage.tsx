@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { PawPrint } from 'lucide-react'
 import { LoginForm } from '@organisms/LoginForm'
+import { Icon } from '@atoms/Icon'
 import { Typography } from '@atoms/Typography'
 import { useAuth } from '@hooks/useAuth'
 import type { LoginFormValues } from '@app-types/auth.types'
@@ -34,13 +34,7 @@ const LoginPage = () => {
         <div className="bg-white rounded-card border border-hairline shadow-card p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div
-              className="mx-auto mb-4 w-16 h-16 rounded-full bg-tan-light flex items-center justify-center text-copper"
-              role="img"
-              aria-label="Stokeshire"
-            >
-              <PawPrint size={28} strokeWidth={1.75} aria-hidden="true" />
-            </div>
+            <Icon name="paw" tone="brand" framed label="Stokeshire" className="mx-auto mb-4" />
             <Typography variant="h2" color="primary">
               Welcome back
             </Typography>

@@ -1,5 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react'
-import { AlertCircle } from 'lucide-react'
+import { Icon } from '@atoms/Icon'
 
 interface Props {
   children: ReactNode
@@ -39,7 +39,7 @@ export class CardErrorBoundary extends Component<Props, State> {
                         bg-white rounded-card border border-hairline shadow-card max-w-sm mx-auto"
         >
           <div className="flex justify-center mb-3 text-slate">
-            <AlertCircle size={28} strokeWidth={1.5} aria-hidden="true" />
+            <Icon name="alertCircle" size={28} strokeWidth={1.5} />
           </div>
           <p className="text-ink font-medium">
             {this.props.fallbackMessage ?? 'Unable to load puppy profile'}

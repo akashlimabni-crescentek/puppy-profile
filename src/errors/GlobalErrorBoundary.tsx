@@ -1,5 +1,5 @@
 import { Component, type ReactNode, type ErrorInfo } from 'react'
-import { TriangleAlert } from 'lucide-react'
+import { Icon } from '@atoms/Icon'
 
 interface Props {
   children: ReactNode
@@ -42,7 +42,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
         <div className="min-h-screen flex items-center justify-center bg-parchment p-4">
           <div className="max-w-md w-full bg-white rounded-card border border-hairline shadow-card p-8 text-center">
             <div className="flex justify-center mb-4 text-slate">
-              <TriangleAlert size={36} strokeWidth={1.5} aria-hidden="true" />
+              <Icon name="triangleAlert" size={36} strokeWidth={1.5} />
             </div>
             <h1 className="font-display text-2xl font-semibold text-ink mb-2">
               Something went wrong

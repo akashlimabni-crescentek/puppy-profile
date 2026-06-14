@@ -1,5 +1,5 @@
 import { memo, useState } from 'react'
-import { Dog } from 'lucide-react'
+import { Icon } from '@atoms/Icon'
 
 export interface AvatarProps {
   /** Image source URL, or null when the family has not added a photo yet */
@@ -46,7 +46,7 @@ export const Avatar = memo<AvatarProps>(({ src, alt, size = 'lg', className = ''
           aria-label={alt}
           className="w-full h-full flex items-center justify-center bg-tan-light text-slate"
         >
-          <Dog aria-hidden="true" className="w-1/2 h-1/2" strokeWidth={1.5} />
+          <Icon name="dog" strokeWidth={1.5} className="w-1/2 h-1/2" />
         </div>
       ) : (
         <img
