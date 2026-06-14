@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { resolve } from 'path'
@@ -19,15 +18,6 @@ export default defineConfig({
       '@styles': resolve(__dirname, 'src/styles'),
       '@errors': resolve(__dirname, 'src/errors'),
       '@routes': resolve(__dirname, 'src/routes'),
-    },
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/utils/testSetup.ts'],
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
     },
   },
 })
