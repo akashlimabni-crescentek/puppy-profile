@@ -39,7 +39,7 @@ const LoginPage = () => {
               Welcome back
             </Typography>
             <Typography variant="body" color="secondary" className="mt-1">
-              Sign in to view your puppy&apos;s profile
+              Sign in to view profile
             </Typography>
           </div>
 

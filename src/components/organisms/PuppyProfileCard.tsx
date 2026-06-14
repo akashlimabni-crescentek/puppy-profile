@@ -5,7 +5,7 @@ import { Typography } from '@atoms/Typography'
 import { InfoRow } from '@molecules/InfoRow'
 import { StatChip } from '@molecules/StatChip'
 import type { Puppy } from '@app-types/puppy.types'
-import { formatBirthday, formatProgramWeek, formatStatus } from '@utils/formatters'
+import { formatProgramWeek, formatStatus, formatUsDate } from '@utils/formatters'
 
 /** Shown when a puppy has no weekly focus set yet (nullable column). */
 const WEEKLY_FOCUS_EMPTY = "This week's focus will appear here."
@@ -38,7 +38,10 @@ export interface PuppyProfileCardProps {
  */
 export const PuppyProfileCard = memo<PuppyProfileCardProps>(
   ({ puppy, familyName, className = '' }) => {
-    const formattedBirthDate = useMemo(() => formatBirthday(puppy.birthDate), [puppy.birthDate])
+    const formattedBirthDate = useMemo(
+      () => formatUsDate(puppy.birthDate, 'long'),
+      [puppy.birthDate]
+    )
     const programWeek = useMemo(
       () => formatProgramWeek(puppy.currentWeek, puppy.programLengthWeeks),
       [puppy.currentWeek, puppy.programLengthWeeks]

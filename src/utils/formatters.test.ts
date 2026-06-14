@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { formatBirthday, formatProgramWeek, capitalizeFirst, formatStatus } from './formatters'
+import {
+  formatBirthday,
+  formatProgramWeek,
+  capitalizeFirst,
+  formatStatus,
+  formatUsDate,
+} from './formatters'
 
 describe('formatBirthday', () => {
   it('formats an ISO date to a readable string', () => {
@@ -11,6 +17,29 @@ describe('formatBirthday', () => {
 
   it('parses the date in local time so the day does not shift', () => {
     expect(formatBirthday('2026-03-14')).toBe('March 14, 2026')
+  })
+})
+
+describe('formatUsDate', () => {
+  it('formats a date-only string as US short by default', () => {
+    expect(formatUsDate('2026-03-14')).toBe('03/14/2026')
+  })
+
+  it('parses date-only strings in local time so the day does not shift', () => {
+    expect(formatUsDate('2026-03-14', 'long')).toBe('March 14, 2026')
+  })
+
+  it('formats a full timestamp as US date-time', () => {
+    expect(formatUsDate('2026-03-14T17:30:00', 'datetime')).toBe('03/14/2026, 5:30 PM')
+  })
+
+  it('formats time-only in US 12-hour format', () => {
+    expect(formatUsDate('2026-03-14T17:30:00', 'time')).toBe('5:30 PM')
+  })
+
+  it('returns an empty string for empty or invalid input', () => {
+    expect(formatUsDate('')).toBe('')
+    expect(formatUsDate('not-a-date')).toBe('')
   })
 })
 
