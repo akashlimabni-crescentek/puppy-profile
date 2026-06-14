@@ -28,7 +28,7 @@ export const StatChip = memo<StatChipProps>(({ label, value, icon, className = '
   >
     <div className="flex items-center gap-2 min-w-0">
       {icon && (
-        <span aria-hidden="true" className="flex shrink-0 items-center text-copper">
+        <span aria-hidden="true" className="flex shrink-0 items-center text-slate">
           {icon}
         </span>
       )}

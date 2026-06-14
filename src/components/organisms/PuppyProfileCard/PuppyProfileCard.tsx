@@ -69,6 +69,13 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
           </Typography>
         </header>
 
+        {/* Family greeting */}
+        {familyName && (
+          <Typography variant="bodySmall" color="secondary" className="pt-4 text-center">
+            Welcome, the {familyName} family
+          </Typography>
+        )}
+
         {/* Cream content zone — scrolls internally when content exceeds the available space */}
         <div className="flex flex-col gap-3 bg-cream p-4 max-h-[60vh] overflow-y-auto">
           {/* White inner card: breed */}
@@ -114,13 +121,6 @@ export const PuppyProfileCard = memo<PuppyProfileCardProps>(
               {puppy.weeklyFocus ?? WEEKLY_FOCUS_EMPTY}
             </Typography>
           </div>
-
-          {/* Family greeting */}
-          {familyName && (
-            <Typography variant="bodySmall" color="secondary" className="pt-1 text-center">
-              Welcome, the {familyName} family
-            </Typography>
-          )}
         </div>
       </article>
     )
